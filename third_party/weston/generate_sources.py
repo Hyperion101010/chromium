@@ -19,16 +19,6 @@ COPYRIGHT = """# Copyright %d The Chromium Authors. All rights reserved.
 """ % (
     datetime.datetime.now().year)
 
-# .c files which don't need -DBIT_DEPTH specified for each compilation.
-#DAV1D_ENTRY_POINT_SOURCES = [
-#    "libdav1d/src/lib.c",
-#    "libdav1d/src/thread_task.c",
-#    "libdav1d/src/thread_task.h",
-#]
-
-# .c files which are included by other .c files and shouldn't be listed.
-#DAV1D_C_FILE_INCLUDES = ["libdav1d/src/itx_1d.c"]
-
 
 def WriteArray(fd, var_name, array, filter_list=[], last_entry=False):
   if len(array) == 0:
@@ -61,21 +51,6 @@ def WriteGn(fd):
   WriteArray(fd, "shared_sources",
       glob.glob("shared/*.[c|h]"))
 
-#
-#  WriteArray(fd, "desktop_shell_sources", glob.glob("src/desktop_shell/*.[c|h]"))
-#  WriteArray(fd, "arm_template_sources", glob.glob("libdav1d/src/arm/*_tmpl.c"))
-#
-#  template_sources = glob.glob("libdav1d/src/*_tmpl.c")
-#  WriteArray(fd, "template_sources", template_sources)
-#
-#  # Generate list of sources which need to be compiled multiple times with the
-#  # correct -DBIT_DEPTH=8|10 option specified each time.
-#  WriteArray(
-#      fd, "c_sources", glob.glob("libdav1d/src/*.[c|h]"),
-#      DAV1D_ENTRY_POINT_SOURCES + DAV1D_C_FILE_INCLUDES + template_sources)
-#
-#  WriteArray(
-#      fd, "entry_point_sources", DAV1D_ENTRY_POINT_SOURCES, last_entry=True)
 
 
 def main():

@@ -187,29 +187,29 @@ def main():
   GenerateGitConfig('version',linux_env)
   GenerateConfig('config/linux/x64', linux_env)
 
-  GenerateConfig('config/linux-noasm/x64', linux_env, ['-Dbuild_asm=false'])
+  #GenerateConfig('config/linux-noasm/x64', linux_env, ['-Dbuild_asm=false'])
 
-  GenerateConfig('config/linux/x86', linux_env,
-                 ['--cross-file', '../crossfiles/linux32.crossfile'])
-  GenerateConfig('config/linux/arm', linux_env,
-                 ['--cross-file', '../crossfiles/arm.crossfile'])
-  GenerateConfig('config/linux/arm64', linux_env,
-                 ['--cross-file', '../crossfiles/arm64.crossfile'])
+  #GenerateConfig('config/linux/x86', linux_env,
+  #               ['--cross-file', '../crossfiles/linux32.crossfile'])
+  #GenerateConfig('config/linux/arm', linux_env,
+  #               ['--cross-file', '../crossfiles/arm.crossfile'])
+  #GenerateConfig('config/linux/arm64', linux_env,
+  #               ['--cross-file', '../crossfiles/arm64.crossfile'])
 
-  win_x86_env = SetupWindowsCrossCompileToolchain('x86')
-  GenerateConfig('config/win/x86', win_x86_env,
-                 ['--cross-file', '../crossfiles/win32.crossfile'] +
-                 WINDOWS_BUILD_ARGS)
+  #win_x86_env = SetupWindowsCrossCompileToolchain('x86')
+  #GenerateConfig('config/win/x86', win_x86_env,
+  #               ['--cross-file', '../crossfiles/win32.crossfile'] +
+  #               WINDOWS_BUILD_ARGS)
 
-  win_x64_dir = 'config/win/x64'
-  win_x64_env = SetupWindowsCrossCompileToolchain('x64')
-  GenerateConfig(win_x64_dir, win_x64_env,
-                 ['--cross-file', '../crossfiles/win64.crossfile'] +
-                 WINDOWS_BUILD_ARGS)
+  #win_x64_dir = 'config/win/x64'
+  #win_x64_env = SetupWindowsCrossCompileToolchain('x64')
+  #GenerateConfig(win_x64_dir, win_x64_env,
+  #               ['--cross-file', '../crossfiles/win64.crossfile'] +
+  #               WINDOWS_BUILD_ARGS)
 
   #Sadly meson doesn't support arm64 + clang-cl, so we need to create the
   #Windows arm64 config from the Windows x64 config.
-  GenerateWindowsArm64Config(win_x64_dir)
+  #GenerateWindowsArm64Config(win_x64_dir)
 
 
 
