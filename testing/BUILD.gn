@@ -9,6 +9,12 @@ executable("empty_main") {
   ]
 }
 
+executable("weston_testing"){
+  deps = [
+    "//third_party/weston",
+  ]
+}
+
 # Targets needed for isolate script to execute.
 group("test_scripts_shared") {
   data = [

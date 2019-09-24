@@ -63,9 +63,9 @@ if (!use_system_libwayland) {
   static_library("wayland_server") {
     sources = [
       "include/protocol/wayland-server-protocol.h",
-      "src/src/event-loop.c",
-      "src/src/wayland-server.c",
-      "src/src/wayland-shm.c",
+      "src/event-loop.c",
+      "src/wayland-server.c",
+      "src/wayland-shm.c",
     ]
 
     deps = [

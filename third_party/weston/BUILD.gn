@@ -1,0 +1,357 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("weston_generated.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/linux/pkg_config.gni")
+import("//build/util/process_version.gni")
+import("//third_party/weston/wayland_protocol.gni")
+
+config("weston_config") {
+  include_dirs = [
+    ".",
+    "config/linux/x64",
+    "version",
+  ]
+}
+
+
+wayland_protocol("input_method_unstable_v1"){
+  sources = [
+    "//third_party/weston/share/wayland-protocols/unstable/input-method/input-method-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("fullscreen_shell_unstable_v1"){
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("xdg_shell_unstable_v5") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/xdg-shell/xdg-shell-unstable-v5.xml",
+  ]
+}
+
+wayland_protocol("xdg_shell_unstable_v6") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
+  ]
+}
+
+
+wayland_protocol("linux_dmabuf_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("viewporter") {
+  sources = [
+    "//third_party/wayland-protocols/src/stable/viewporter/viewporter.xml",
+  ]
+}
+
+wayland_protocol("presentation_time") {
+  sources = [
+    "//third_party/wayland-protocols/src/stable/presentation-time/presentation-time.xml",
+  ]
+}
+
+wayland_protocol("vsync_feedback_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/vsync-feedback/vsync-feedback-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("secure_output_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/secure-output/secure-output-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("alpha_compositing_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("remote_shell_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/remote-shell/remote-shell-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("gaming_input_unstable_v2") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/gaming-input/gaming-input-unstable-v2.xml",
+  ]
+}
+
+wayland_protocol("stylus_unstable_v2") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml",
+  ]
+}
+
+wayland_protocol("pointer_gestures_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("relative_pointer_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/relative-pointer/relative-pointer-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("keyboard_configuration_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/keyboard/keyboard-configuration-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("stylus_tools_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/stylus-tools/stylus-tools-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("keyboard_extension_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/keyboard/keyboard-extension-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("input_timestamps_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/input-timestamps/input-timestamps-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("cursor_shapes_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/cursor-shapes/cursor-shapes-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("text_input_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/text-input/text-input-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("notification_shell_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/unstable/notification-shell/notification-shell-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("linux_explicit_synchronization_unstable_v1") {
+  sources = [
+    "//third_party/wayland-protocols/src/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml",
+  ]
+}
+
+wayland_protocol("ivi_application"){
+  sources = ["protocol/ivi-application.xml",]
+}
+
+wayland_protocol("ivi_hmi_controller"){
+  sources = ["protocol/ivi-hmi-controller.xml",]
+}
+
+wayland_protocol("text_cursor_position"){
+  sources = ["protocol/text-cursor-position.xml",]
+}
+
+wayland_protocol("weston_content_protection"){
+  sources = ["protocol/weston-content-protection.xml",]
+}
+
+wayland_protocol("weston_debug"){
+  sources = ["protocol/weston-debug.xml",]
+}
+
+wayland_protocol("weston_desktop_shell"){
+  sources = ["protocol/weston-desktop-shell.xml",]
+}
+
+wayland_protocol("weston_screenshooter"){
+  sources = ["protocol/weston-screenshooter.xml",]
+}
+
+wayland_protocol("weston_test"){
+  sources = ["protocol/weston-test.xml",]
+}
+
+wayland_protocol("weston_touch_calibration"){
+  sources = ["protocol/weston-touch-calibration.xml",]
+}
+
+process_version("version"){
+  template_file = "include/libweston/version.h.in"
+  sources = [
+    "//chrome/VERSION",]
+  output = "$target_gen_dir/include/libweston/version.h"
+}
+
+config("header_config"){
+  #project_version = "6.0.91" #needs a fix
+  #package_url = "https://wayland.freedesktop.org"
+  #bugreport_url = "https://gitlab.freedesktop.org/wayland/weston/issues/"
+  #prefix = rebase_path("//third_party/weston",root_build_dir)
+  bindir =  rebase_path("//third_party/weston",root_out_dir)
+  datadir = "//chromium/src/third_party/weston/"
+  #libexecdir = bindir
+  #moduledir = datadir
+  #libmodule = "//chromium/src/third_party/weston/libweston"
+  xwayland = "usr/bin/Xwayland"
+  westonbackend = "drm" + "-backend.so"
+  defines = [
+    "MAJOR_IN_SYSMACROS",
+    "MAJOR_IN_MKDEV",
+    "HAVE_MKOSTEMP",    #this is the loop from meson.build
+    "HAVE_STRCHRNUL",
+    "HAVE_INITGROUPS",
+    "POSIX_FALLOCATE",
+    "_GNU_SOURCE=1",
+    "_ALL_SOURCE=1",
+    #"PACKAGE_STRING=weston \"${project_version}\"",
+    #"PACKAGE_VERSION=\"${project_version}\"",
+    #"VERSION=\"${project_version}\"",
+    #"PACKAGE_URL=\"${package_url}\"",
+    #"PACKAGE_BUGREPORT=\"${bugreport_url}\"",
+    "BINDIR= \"${bindir}\"",
+    "DATADIR = \"${datadir}\"",
+    "LIBEXECDIR= \"${datadir}\"",
+    "MODULEDIR= \"${datadir}\"",
+    "LIBWESTON_MODULEDIR= \"${datadir}\"",
+    "HAVE_XKBCOMMON_COMPOSE= 1",
+    "WESTON_NATIVE_BACKEND = \"${westonbackend}\"",
+    #SHARED CONFIGS
+    "HAVE_PANGO",
+    "HAVE_JPEG",
+    "HAVE_WEBP",
+    "HAVE_SYSTEMD_LOGIN_209",
+    "HAVE_DBUS",
+    "HAVE_SYSTEMD_LOGIN",
+    "BUILD_RDP_COMPOSITOR",
+    "ENABLE_EGL",
+    "BUILD_FBDEV_COMPOSITOR",
+    "BUILD_DRM_COMPOSITOR",
+    "BUILD_HEADLESS_COMPOSITOR",
+    "BUILD_X11_COMPOSITOR",
+    "BUILD_WAYLAND_COMPOSITOR",
+    "ENABLE_JUNIT_XML",
+    "HAVE_FREERDP_VERSION_H",
+    "HAVE_SURFACE_BITS_BMP",
+    "HAVE_GBM_NODIFIERS",
+    "HAVE_GBM_FD_IMPORT",
+    "BUILD_VAAPI_RECORDER",
+    "HAVE_DRM_ADDFB2_MODIFIERS",
+    "HAVE_DRM_ATOMIC",
+    "HAVE_DRM_FORMATS_BLOB",
+    "HAVE_XCB_XKB",
+    "USE_RESIZE_POOL",
+    "HAVE_LIBDRM_",
+    "XSERVER_PATH=\"${xwayland}\"",
+    "HAVE_LCMS",
+]
+}
+
+#subdir('include')
+#subdir('protocol')
+#subdir('shared')
+#subdir('libweston')
+#subdir('libweston-desktop')
+#subdir('xwayland')
+#subdir('compositor')
+#subdir('desktop-shell')
+#subdir('fullscreen-shell')
+#subdir('ivi-shell')
+#subdir('remoting')
+#subdir('pipewire')
+#subdir('clients')
+#subdir('wcap')
+#subdir('tests')
+#subdir('data')
+#subdir('man')
+
+static_library("compositor") {
+  sources = compositor_sources
+  include_dirs = [
+    "/usr/local/include/",
+    #"/home/hyperion/intern/no_space/summer2019/igalia/bits",
+    "/usr/include/libevdev-1.0",
+    "/usr/lib/x86_64-linux-gnu/",
+    "/usr/lib/",
+    "/usr/include",
+    "/usr/include/colord-1/",
+    "/home/hyperion/chromium/src/third_party/weston",
+    "/usr/local/lib",
+    "/home/hyperion/intern/no_space/summer2019/igalia/pixman-0.34.0/pixman",
+    "/home/hyperion/intern/no_space/summer2019/igalia/pixman-0.34.0",
+    "/home/hyperion/intern/no_space/summer2019/igalia/glib-2.62.0/glib",
+    "/home/hyperion/intern/no_space/summer2019/igalia/glib-2.62.0/",
+    "/home/hyperion/intern/no_space/summer2019/igalia/glib-2.62.0/_build/glib",
+    "/home/hyperion/intern/no_space/summer2019/igalia/glib-2.62.0/_build",
+    "/home/hyperion/intern/no_space/summer2019/igalia/glib-2.62.0/gmodule",
+    "include/",
+    "build/include",
+    "libweston",
+    "version",
+    "shared",
+    "config/linux/x64",
+    "protocol",
+    ":weston_configs",
+  ]
+  deps = [
+    ":ivi_application",
+    ":ivi_hmi_controller",
+    ":text_cursor_position",
+    ":weston_content_protection",
+    ":weston_debug",
+    ":weston_desktop_shell",
+    ":weston_screenshooter",
+    ":weston_test",
+    ":weston_touch_calibration",
+    ":fullscreen_shell_unstable_v1",
+    ":xdg_shell_unstable_v5",
+    ":xdg_shell_unstable_v6",
+    ":linux_dmabuf_unstable_v1",
+    ":input_method_unstable_v1",
+    ":viewporter",
+    ":presentation_time",
+    ":vsync_feedback_unstable_v1",
+    ":secure_output_unstable_v1",
+    ":alpha_compositing_unstable_v1",
+    ":remote_shell_unstable_v1",
+    ":gaming_input_unstable_v2",
+    ":stylus_unstable_v2",
+    ":pointer_gestures_unstable_v1",
+    ":relative_pointer_unstable_v1",
+    ":keyboard_configuration_unstable_v1",
+    ":stylus_tools_unstable_v1",
+    ":keyboard_extension_unstable_v1",
+    ":input_timestamps_unstable_v1",
+    ":cursor_shapes_unstable_v1",
+    ":text_input_unstable_v1",
+    ":notification_shell_unstable_v1",
+    ":linux_explicit_synchronization_unstable_v1",
+    "//third_party/wayland:wayland_scanner",
+    ":version",
+  ]
+  configs += [":header_config",]
+}
+
+executable("weston") {
+   deps = [ ":compositor" ]
+   configs += [
+     ":weston_config",
+   ]
+}
+
