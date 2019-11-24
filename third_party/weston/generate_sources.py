@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 """Creates a GN include file for building weston from source."""
 
-__author__ = "msisov@igalia.com (Dale Curtis)"
+__author__ = "sbalikondwar@igalia.com ( Shivam Balikondwar )"
 
 import datetime
 import glob
@@ -36,20 +36,20 @@ def WriteArray(fd, var_name, array, filter_list=[], last_entry=False):
 
 def WriteGn(fd):
   fd.write(COPYRIGHT)
-  WriteArray(fd, "clients_sources", glob.glob("clients/*.[c|h]"))
-  WriteArray(fd, "compositor_sources", glob.glob("compositor/*.[c|h]"))
-  WriteArray(fd, "desktop_shell_sources",
-      glob.glob("desktop-shell/*.[c|h]"))
-  WriteArray(fd, "fullscreen_shell_sources",
-      glob.glob("fullscreen-shell/*.c"))
-  WriteArray(fd, "libweston_wayland_sources",
-      glob.glob("libweston/backend-wayland/*.c") +
-      glob.glob("libweston/*.[c|h]") +
-      glob.glob("libweston/renderer-gl/*.[c|h]"))
-  WriteArray(fd, "libweston_desktop_sources",
-      glob.glob("libweston-desktop/*.[c|h]"))
-  WriteArray(fd, "shared_sources",
-      glob.glob("shared/*.[c|h]"))
+  #WriteArray(fd, "clients_sources", glob.glob("src/clients/*.[c|h]"))
+  #WriteArray(fd, "compositor_sources", glob.glob("src/compositor/*.[c|h]"))
+  #WriteArray(fd, "desktop_shell_sources",
+  #    glob.glob("src/desktop-shell/*.[c|h]"))
+  #WriteArray(fd, "fullscreen_shell_sources",
+  #    glob.glob("src/fullscreen-shell/*.c"))
+  #WriteArray(fd, "libweston_wayland_sources",
+  #    glob.glob("src/libweston/backend-wayland/*.c") +
+  #    glob.glob("src/libweston/*.[c|h]") +
+  #    glob.glob("src/libweston/renderer-gl/*.[c|h]"))
+  #WriteArray(fd, "libweston_desktop_sources",
+  #    glob.glob("src/libweston-desktop/*.[c|h]"))
+  #WriteArray(fd, "shared_sources",
+  #    glob.glob("src/shared/*.[c|h]"))
 
 
 

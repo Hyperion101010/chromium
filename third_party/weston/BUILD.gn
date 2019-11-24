@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/weston/weston_generated.gni")
+#import("src/weston_generated.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/util/process_version.gni")
@@ -11,232 +11,105 @@ import("//third_party/wayland/wayland_protocol.gni")
 
 wayland_protocol("input_method_unstable_v1"){
   sources = [
-    "//third_party/weston/share/wayland-protocols/unstable/input-method/input-method-unstable-v1.xml",
+    "src/share/wayland-protocols/unstable/input-method/input-method-unstable-v1.xml",
   ]
 }
 
 wayland_protocol("xdg_output"){
   sources = [
-    "//third_party/weston/share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml",
+    "src/share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml",
   ]
 }
 
 wayland_protocol("xdg_foreign"){
   sources = [
-    "//third_party/weston/share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
-    "//third_party/weston/share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
+    "src/share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
+    "src/share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
   ]
 }
 
 wayland_protocol("xdg_decoration"){
   sources = [
-    "//third_party/weston/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml",
+    "src/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml",
   ]
 }
 
 wayland_protocol("ivi_application"){
   sources = [
-    "//third_party/weston/protocol/ivi-application.xml",]
+    "src/protocol/ivi-application.xml",]
 }
 
 wayland_protocol("ivi_hmi_controller"){
   sources = [
-    "//third_party/weston/protocol/ivi-hmi-controller.xml",]
+    "src/protocol/ivi-hmi-controller.xml",]
+}
+
+wayland_protocol("fullscreen_shell"){
+  sources = [
+    "src/share/wayland-protocols/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
+  ]
 }
 
 wayland_protocol("text_cursor_position"){
   sources = [
-    "//third_party/weston/protocol/text-cursor-position.xml",]
+    "src/protocol/text-cursor-position.xml",]
 }
 
 wayland_protocol("weston_content_protection"){
-  sources = ["//third_party/weston/protocol/weston-content-protection.xml",]
+  sources = ["src/protocol/weston-content-protection.xml",]
 }
 
 wayland_protocol("weston_debug"){
-  sources = ["//third_party/weston/protocol/weston-debug.xml",]
+  sources = ["src/protocol/weston-debug.xml",]
 }
 
 wayland_protocol("weston_desktop_shell"){
-  sources = ["//third_party/weston/protocol/weston-desktop-shell.xml",]
+  sources = ["src/protocol/weston-desktop-shell.xml",]
 }
 
 wayland_protocol("weston_screenshooter"){
-  sources = ["//third_party/weston/protocol/weston-screenshooter.xml",]
+  sources = ["src/protocol/weston-screenshooter.xml",]
 }
 
 wayland_protocol("weston_test"){
-  sources = ["//third_party/weston/protocol/weston-test.xml",]
+  sources = ["src/protocol/weston-test.xml",]
 }
 
 wayland_protocol("weston_touch_calibration"){
-  sources = ["//third_party/weston/protocol/weston-touch-calibration.xml",]
+  sources = ["src/protocol/weston-touch-calibration.xml",]
 }
 
 wayland_protocol("tablet"){
   sources = [
-    "//third_party/weston/share/wayland-protocols/unstable/tablet/tablet-unstable-v1.xml",
-    "//third_party/weston/share/wayland-protocols/unstable/tablet/tablet-unstable-v2.xml"
+    "src/share/wayland-protocols/unstable/tablet/tablet-unstable-v1.xml",
+    "src/share/wayland-protocols/unstable/tablet/tablet-unstable-v2.xml"
   ]
 }
 
 wayland_protocol("xdg_shell") {
   sources = [
-    "//third_party/weston/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml",
+    "src/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml",
   ]
 }
 
 wayland_protocol("pointer_constraints") {
   sources = [
-    "//third_party/weston/share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
+    "src/share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
   ]
 }
 
-process_version("version"){
-  template_file = "//third_party/weston/include/libweston/version.h.in"
-  sources = [
-  "//chrome/VERSION",
-  ]
-  output = "$target_gen_dir/include/libweston/version.h"
-}
+# This script is not for libweston version file, need a workaround on it
+#process_version("version"){
+#  template_file = "src/include/libweston/version.h.in"
+#  sources = [
+#  "//chrome/VERSION",
+#  ]
+#  output = "$target_gen_dir/include/libweston/version.h"
+#}
 
-config("header_config"){
-  #project_version = "6.0.91" #needs a fix
-  #package_url = "https://wayland.freedesktop.org"
-  #bugreport_url = "https://gitlab.freedesktop.org/wayland/weston/issues/"
-  #prefix = rebase_path("//third_party/weston",root_build_dir)
-  #bindir =  rebase_path("//third_party/weston",root_out_dir)
-  #datadir = "//chromium/src/third_party/weston/"
-  #libexecdir = bindir
-  #moduledir = datadir
-  #libmodule = "//chromium/src/third_party/weston/libweston"
-  #xwayland = "usr/bin/Xwayland"
-  #westonbackend = "drm" + "-backend.so"
-  defines = [
-    "MAJOR_IN_SYSMACROS",
-    "MAJOR_IN_MKDEV",
-    "HAVE_MKOSTEMP",
-    "HAVE_STRCHRNUL",
-    "HAVE_INITGROUPS",
-    "POSIX_FALLOCATE",
-    "_GNU_SOURCE=1",
-    "_ALL_SOURCE=1",
-    #"PACKAGE_STRING=weston \"${project_version}\"",
-    #"PACKAGE_VERSION=\"${project_version}\"",
-    #"VERSION=\"${project_version}\"",
-    #"PACKAGE_URL=\"${package_url}\"",
-    #"PACKAGE_BUGREPORT=\"${bugreport_url}\"",
-    #"BINDIR= \"${bindir}\"",
-    #"DATADIR = \"${datadir}\"",
-    #"LIBEXECDIR= \"${datadir}\"",
-    #"MODULEDIR= \"${datadir}\"",
-    #"LIBWESTON_MODULEDIR= \"${datadir}\"",
-    "HAVE_XKBCOMMON_COMPOSE= 1",
-    #"WESTON_NATIVE_BACKEND = \"${westonbackend}\"",
-    #SHARED CONFIGS
-    "HAVE_PANGO",
-    "HAVE_JPEG",
-    "HAVE_WEBP",
-    "HAVE_SYSTEMD_LOGIN_209",
-    "HAVE_DBUS",
-    "HAVE_SYSTEMD_LOGIN",
-    "BUILD_RDP_COMPOSITOR",
-    "ENABLE_EGL",
-    "BUILD_FBDEV_COMPOSITOR",
-    "BUILD_DRM_COMPOSITOR",
-    "BUILD_HEADLESS_COMPOSITOR",
-    "BUILD_X11_COMPOSITOR",
-    "BUILD_WAYLAND_COMPOSITOR",
-    "ENABLE_JUNIT_XML",
-    "HAVE_FREERDP_VERSION_H",
-    "HAVE_SURFACE_BITS_BMP",
-    "HAVE_GBM_NODIFIERS",
-    "HAVE_GBM_FD_IMPORT",
-    "BUILD_VAAPI_RECORDER",
-    "HAVE_DRM_ADDFB2_MODIFIERS",
-    "HAVE_DRM_ATOMIC",
-    "HAVE_DRM_FORMATS_BLOB",
-    "HAVE_XCB_XKB",
-    "USE_RESIZE_POOL",
-    "HAVE_LIBDRM_",
-    #"XSERVER_PATH=\"${xwayland}\"",
-    "HAVE_LCMS",
-]
-}
-
-source_set("pixman"){
-  include_dirs = [
-    "//third_party/weston/include",
-    "//third_party/weston/build/include",
-    "//third_party/weston/libweston",
-    "//third_party/weston/version",
-    "//third_party/weston/shared",
-    "//third_party/weston/config/linux/x64",
-    "//third_party/weston/protocol",
-  ]
-  deps = [ ":pixman_shim",
-  ]
-  public_configs = [
-  ":pixman_conf",
-  ]
-}
-
-
-pkg_config("pixman_conf"){
+pkg_config("pixman"){
   packages = ["pixman-1"]
 }
-
-shim_headers("pixman_shim"){
-  root_path =
-    "/home/hyperion/intern/no_space/summer2019/igalia/pixman-0.34.0"        #location of your local pixman, pkg-config will be sufficient though
-
-  headers = [
-              "config.h",
-              "pixman/pixman-mips-dspr2.h",
-              "pixman/pixman.h",
-              "pixman/pixman-compiler.h",
-              "pixman/pixman-arm-asm.h",
-              "pixman/pixman-inlines.h",
-              "pixman/pixman-accessor.h",
-              "pixman/pixman-private.h",
-              "pixman/pixman-edge-imp.h",
-              "pixman/pixman-version.h",
-              "pixman/pixman-mips-dspr2-asm.h",
-              "pixman/loongson-mmintrin.h",
-              "pixman/pixman-arm-common.h",
-              "pixman/pixman-arm-simd-asm.h",
-              "pixman/pixman-arm-neon-asm.h",
-              "pixman/pixman-combine32.h",
-            ]
-}
-
-shim_headers("cairo_gl"){
-  root_path =
-  "/home/hyperion/intern/no_space/summer2019/igalia"      #location of your local cairo-gl, pkg-config will be sufficient though
-
-  headers = [
-    "cairo-gl.h",
-  ]
-}
-
-source_set("glib"){
-  include_dirs = [
-    "//third_party/weston/include",
-    "//third_party/weston/build/include",
-    "//third_party/weston/libweston",
-    "//third_party/weston/version",
-    "//third_party/weston/shared",
-    "//third_party/weston/config/linux/x64",
-    "//third_party/weston/protocol",
-  ]
-  deps = [ ":glib_shim",
-  ]
-  public_configs = [
-    ":glib_conf",
-  ]
-}
-
-
 
 pkg_config("glib_conf"){
   packages = ["glib-2.0",
@@ -248,16 +121,6 @@ pkg_config("glib_conf"){
       "GLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_40",
     ]
 }
-
-shim_headers("glib_shim"){
-  root_path =
-    "/home/hyperion/intern/no_space/summer2019/igalia/glib-2.62.0"        #location of your local glib, pkg-config will be sufficient though
-
-  headers = [
-              "glib/glib.h",
-            ]
-}
-
 
 source_set("wayland_protocol"){
   sources = [ "//third_party/wayland/protocol/wayland-protocol.c" ]
@@ -277,175 +140,458 @@ pkg_config("drm"){
   ]
 }
 
-pkg_config("systemd"){
+pkg_config("xkbcommon"){
   packages = [
-    "systemd",
+    "xkbcommon",
   ]
 }
 
-pkg_config("dbus"){
+pkg_config("wayland_server"){
   packages = [
-    "dbus-1",
+    "wayland-server",
   ]
 }
 
-pkg_config("colord_conf"){
+#protocol
+
+pkg_config("wayland_scanner"){
   packages = [
-    "colord",
+    "wayland-scanner",
   ]
 }
 
-static_library("libweston"){    #compositor deps on libweston
-  sources = libweston_wayland_sources
+pkg_config("wayland_protocols"){
+  packages = [
+    "wayland-protocols",
+  ]
+}
+
+#shared
+
+pkg_config("wayland_client"){
+  packages = [
+    "wayland-client",
+  ]
+}
+
+pkg_config("libpng"){
+  packages = [
+    "libpng",
+  ]
+}
+
+static_library("libudev"){  #can't include as deps cause there was no BUILD.gn script to depend on in libudev
+  sources = [
+    "//third_party/libudev/libudev0.h",
+    "//third_party/libudev/libudev1.h",
+  ]
+}
+
+static_library("lib_libshared"){
+  sources = ["src/shared/config-parser.c","src/shared/option-parser.c","src/shared/file-util.c","src/shared/os-compatibility.c","src/shared/xalloc.c",
+  ]
+
   include_dirs = [
-    "//third_party/weston",
-    "//third_party/weston/version",
-    "//third_party/weston/include",
-    "//third_party/weston/libweston",
-    "//third_party/weston/shared",
-    "//third_party/weston/config/linux/x64",
-    "//third_party/weston/build/include/",
-    "/usr/include/",
-  ]
-  deps = [
-    "//third_party/weston:pixman",
-    "//third_party/weston:ivi_application",
-    "//third_party/weston:ivi_hmi_controller",
-    "//third_party/weston:text_cursor_position",
-    "//third_party/weston:weston_content_protection",
-    "//third_party/weston:weston_debug",
-    "//third_party/weston:weston_desktop_shell",
-    "//third_party/weston:weston_screenshooter",
-    "//third_party/weston:weston_test",
-    "//third_party/weston:weston_touch_calibration",
-    "//third_party/weston:pointer_constraints",
-    "//third_party/weston:cairo_gl",
-    "//third_party/weston:xdg_output",
-    "//third_party/weston:xdg_decoration",
-    "//third_party/weston:xdg_foreign",
-    "//third_party/wayland-protocols:fullscreen_shell_protocol",
-    "//third_party/wayland-protocols:linux_dmabuf_protocol",
-    "//third_party/weston:input_method_unstable_v1",
-    "//third_party/weston:xdg_shell",
-    "//third_party/wayland-protocols:xdg_shell_protocol",
-    "//third_party/wayland-protocols:viewporter_protocol",
-    "//third_party/wayland-protocols:presentation_time_protocol",
-    "//third_party/wayland-protocols:pointer_gestures_protocol",
-    "//third_party/wayland-protocols:relative_pointer_protocol",
-    "//third_party/wayland-protocols:input_timestamps_protocol",
-    "//third_party/wayland-protocols:text_input_protocol",
-    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
-    "//third_party/mesa_headers",
-    "//third_party/wayland:wayland_scanner",
-    "//third_party/weston:version",
+    "src",
+    "src/include",
+    "config/linux/x64",
   ]
   public_configs = [
-    ":drm",
-    ":cairo_packages",
-    ":systemd",
-    ":dbus",
+    ":wayland_client",
   ]
 }
 
-static_library("clients"){  #libweston depends on clients
-  sources = clients_sources
+static_library("lib_cairo_shared"){
+  sources = ["src/shared/image-loader.c","src/shared/cairo-util.c","src/shared/frame.c",]
   include_dirs = [
-    "//third_party/weston/clients",
-    "//third_party/weston",
-    "//third_party/weston/include",
-    "//third_party/weston/config/linux/x64",
-    "/usr/include/"
+    "src",
   ]
   deps = [
-    ":libweston",
-    "//third_party/weston:ivi_application",
-    "//third_party/weston:ivi_hmi_controller",
-    "//third_party/weston:text_cursor_position",
-    "//third_party/weston:weston_content_protection",
-    "//third_party/weston:weston_debug",
-    "//third_party/weston:weston_desktop_shell",
-    "//third_party/weston:weston_screenshooter",
-    "//third_party/weston:weston_test",
-    "//third_party/weston:weston_touch_calibration",
-    "//third_party/weston:pointer_constraints",
-    "//third_party/weston:xdg_output",
-    "//third_party/weston:xdg_decoration",
-    "//third_party/weston:xdg_foreign",
-    "//third_party/wayland-protocols:fullscreen_shell_protocol",
-    "//third_party/wayland-protocols:linux_dmabuf_protocol",
-    "//third_party/weston:input_method_unstable_v1",
-    "//third_party/weston:cairo_gl",
-    "//third_party/weston:xdg_shell",
-    "//third_party/wayland-protocols:xdg_shell_protocol",
-    "//third_party/wayland-protocols:viewporter_protocol",
-    "//third_party/wayland-protocols:presentation_time_protocol",
-    "//third_party/weston:tablet",
-    "//third_party/wayland-protocols:pointer_gestures_protocol",
-    "//third_party/wayland-protocols:relative_pointer_protocol",
-    "//third_party/wayland-protocols:input_timestamps_protocol",
-    "//third_party/wayland-protocols:text_input_protocol",
-    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
-    "//third_party/mesa_headers",
-    "//third_party/wayland:wayland_scanner",
-    ":version",
-   ]
+    ":lib_libshared",
+  ]
   public_configs = [
     ":cairo_packages",
-    ":drm",
-  ]
-}
-
-static_library("compositor") {
-  sources = compositor_sources
-  include_dirs = [
-    "/usr/include",
-    "//third_party/weston",
-    "//third_party/weston/include",
-    "//third_party/libevdev/src/include",
-    "//third_party/weston/build/include",
-    "//third_party/weston/libweston",
-    "//third_party/weston/version",
-    "//third_party/weston/shared",
-    "//third_party/weston/config/linux/x64",
-    "//third_party/weston/protocol",
-  ]
-  deps = [
-    ":libweston",
-    ":clients",
-    ":glib",
+    ":libpng",
     ":pixman",
-    ":pointer_constraints",
+  ]
+}
+
+#libweston
+
+shared_library("lib_weston"){
+
+  sources = [
+  "version/git-version.h",
+  "src/libweston/animation.c",
+  "src/libweston/bindings.c",
+  "src/libweston/clipboard.c",
+  "src/libweston/compositor.c",
+  "src/libweston/content-protection.c",
+  "src/libweston/data-device.c",
+  "src/libweston/input.c",
+  "src/libweston/linux-dmabuf.c",
+  "src/libweston/linux-explicit-synchronization.c",
+  "src/libweston/linux-sync-file.c",
+  "src/libweston/log.c",
+  "src/libweston/noop-renderer.c",
+  "src/libweston/pixel-formats.c",
+  "src/libweston/pixman-renderer.c",
+  "src/libweston/plugin-registry.c",
+  "src/libweston/screenshooter.c",
+  "src/libweston/timeline.c",
+  "src/libweston/touch-calibration.c",
+  "src/libweston/weston-log-wayland.c",
+  "src/libweston/weston-log-file.c",
+  "src/libweston/weston-log-flight-rec.c",
+  "src/libweston/weston-log.c",
+  "src/libweston/zoom.c",
+  "src/shared/matrix.c",
+  ]
+
+  include_dirs = [
+    "src/include",
+    "src/shared",
+    "src",
+    "config/linux/x64",
+    "version",
+    "src/build/include",
+    "/home/hyperion/intern/no_space/summer2019/igalia/include",
+  ]
+
+  public_configs = [
+    ":wayland_server",
+    ":xkbcommon",
+    ":pixman",
+    ":egl",
+  ]
+  deps = [
+    "//third_party/libdrm",
+    "//third_party/weston:text_cursor_position",
+    "//third_party/weston:weston_content_protection",
+    "//third_party/weston:weston_debug",
     "//third_party/weston:weston_screenshooter",
+    "//third_party/weston:weston_touch_calibration",
+    "//third_party/weston:pointer_constraints",
+    "//third_party/weston:xdg_output",
+    "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/weston:input_method_unstable_v1",
+    "//third_party/wayland-protocols:viewporter_protocol",
+    "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:relative_pointer_protocol",
+    "//third_party/wayland-protocols:input_timestamps_protocol",
+    "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
+    #":version",
+    "//third_party/mesa_headers",
+    ":lib_libshared",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ]
+
+    cflags_c = [ 
+    "-Wno-string-conversion", "-Wno-implicit-function-declaration",
+  ]
+
+}
+
+
+static_library("lib_session_helper"){
+  include_dirs = [
+  "src",
+  "src/shared",
+  "src/libweston",
+  "src/include",
+  ]
+  sources = [
+    "src/libweston/launcher-direct.c",
+    "src/libweston/launcher-util.c",
+    "src/libweston/launcher-weston-launch.c",
+  ]
+
+  public_configs = [
+    ":pixman",
+    ":xkbcommon",
+    ":wayland_server",
+  ]
+}
+
+static_library("dep_vertex_clipping"){
+  sources = [
+    "src/libweston/vertex-clipping.c",
+  ]
+  include_dirs = [
+    "src/libweston",
+  ]
+}
+
+static_library("lib_libinput_backend"){
+  include_dirs = [
+    "src/libweston",
+    "src",
+  ]
+  sources = [
+    "src/libweston/libinput-device.c",
+    "src/libweston/libinput-seat.c",
+  ]
+  deps = [
+    ":libudev",
+    ":dep_vertex_clipping",
+  ]
+}
+
+#renderer-gl
+
+pkg_config("egl"){
+  packages = [
+    "egl",
+  ]
+}
+
+shared_library("renderer_gl"){
+  sources= [
+    "src/libweston/renderer-gl/gl-renderer.c",
+    "src/libweston/vertex-clipping.c",    
+  ]
+  include_dirs = [
+    "src",
+    "src/libweston",
+    "src/libweston/renderer-gl",
+    "config/linux/x64",
+    "/home/hyperion/intern/no_space/summer2019/igalia/include",
+    "src/include",
+    "src/shared",
+  ]
+  deps = [
+    "//third_party/libdrm",
+    "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
+    "//third_party/angle:libEGL",
+    "//third_party/angle:libGLESv2",
+    ":lib_weston",
+  ]
+  public_configs = [
+    ":pixman",
+    ":egl",
+    ":xkbcommon",
+    ":wayland_server",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+#backend-drm
+
+static_library("lib_backlight"){
+  include_dirs = [
+    "src",
+    "src/libweston/backend-drm",
+  ]
+  sources = [
+    "src/libbacklight.c",
+  ]
+  defines = [
+    "BUILD_DRM_COMPOSITOR = 1",
+  ]
+  deps = [
+    "//third_party/libdrm",
+    ":libudev",
+  ]
+}
+
+pkg_config("gbm"){
+  packages = [
+    "gbm",
+  ]
+}
+
+static_library("backend_drm"){
+  sources = ["src/libweston/backend-drm/drm.c","src/libweston/backend-drm/fb.c","src/libweston/backend-drm/modes.c","src/libweston/backend-drm/kms.c","src/libweston/backend-drm/state-helpers.c","src/libweston/backend-drm/state-propose.c",
+  ]
+  include_dirs = [
+    "src/libweston/backend-drm",
+    "src",
+    "src/shared",
+    "//third_party/libevdev/src/include",
+  ]
+  deps = [
+    ":lib_weston",
+    ":lib_session_helper",
+    ":lib_libinput_backend",
+    ":lib_backlight",
+    #"//third_party/wayland-protocols:presentatiion_time_protocol",
+    "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    ":libudev",
+    "//third_party/libdrm",
+  ]
+  public_configs = [
+    ":gbm",
+  ]
+  defines = [
+    "BUILD_DRM_COMPOSITOR = 1",
+    "HAVE_DRM_ADDFB2_MODIFIERS = 1", # if drm > 2.4.71,
+    "HAVE_DRM_ATOMIC = 1", #if drm > 2.4.78
+    "HAVE_DRM_FORMATS_BLOB = 1", # if drm > 2.4.83
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+#backend_wayland
+
+static_library("backend_wayland"){
+  sources = [
+    "src/libweston/backend-wayland/wayland.c",
+  ]
+  include_dirs = [
+    "src/shared",
+    "//third_party/weston",
+  ]
+  defines = [
+    "BUILD_WAYLAND_COMPOSITOR = 1",
+  ]
+  deps = [
+    "//third_party/weston:fullscreen_shell",
+    "//third_party/weston:xdg_shell",
+    "//third_party/wayland-protocols:presentation_time_protocol",
+    ":lib_weston",
+    #wayland cursor no such lib found
+  ]
+  public_configs = [
+    ":cairo_packages",
+    ":wayland_client",
+    ":pixman",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+#libweston_desktop
+
+shared_library("libweston_desktop"){
+  sources = [
+    "src/libweston-desktop/client.c",
+    "src/libweston-desktop/libweston-desktop.c",
+    "src/libweston-desktop/seat.c",
+    "src/libweston-desktop/surface.c",
+    "src/libweston-desktop/xwayland.c",
+    "src/libweston-desktop/wl-shell.c",
+    "src/libweston-desktop/libweston-desktop.h",
+  ]
+  deps = [
+    "//third_party/weston:xdg_shell",
+    ":lib_weston",
+  ]
+  include_dirs = [
+    "libweston-desktop",
+  ]
+}
+
+#compositor
+
+pkg_config("libinput"){
+  packages = [
+    "libinput",
+  ]
+}
+
+static_library("lib_compositor"){
+  sources = [
+    "version/git-version.h",
+    "src/compositor/main.c",
+    "src/compositor/text-backend.c",
+    "src/compositor/weston-screenshooter.c",
+  ]
+  include_dirs = [
+    "config/linux/x64",
+    "/home/hyperion/intern/no_space/summer2019/igalia/include",
+    "version",
+    "src/include",
+    ".",
+    "//third_party/libevdev/src/include",
+    "//src/out/35debug/include",
+    "$target_gen_dir/include",
+    "build/include",
+    "src",
+  ]
+  deps = [
+    "//third_party/weston:weston_screenshooter",
+    "//third_party/weston:input_method_unstable_v1",
+    "//third_party/wayland-protocols:text_input_protocol",
+    ":lib_libshared",
+    ":lib_weston",
+    ":renderer_gl",
     "//third_party/libevdev",
     "//third_party/mesa_headers",
-    "//third_party/wayland-protocols:fullscreen_shell_protocol",
-    "//third_party/wayland-protocols:linux_dmabuf_protocol",
-    "//third_party/weston:input_method_unstable_v1",
-    ":xdg_shell",
-    "//third_party/wayland-protocols:xdg_shell_protocol",
-    "//third_party/wayland-protocols:viewporter_protocol",
-    "//third_party/wayland-protocols:presentation_time_protocol",
-    "//third_party/weston:cairo_gl",
-    "//third_party/wayland-protocols:pointer_gestures_protocol",
-    "//third_party/wayland-protocols:relative_pointer_protocol",
-    "//third_party/wayland-protocols:input_timestamps_protocol",
-    "//third_party/wayland-protocols:text_input_protocol",
-    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
-    "//third_party/wayland:wayland_scanner",
-    ":version",
   ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    ":header_config",
-    ":colord_conf",
-    ]
+    "//build/config/compiler:no_chromium_code",
+  ]
+
+  public_configs = [
+    ":libinput",
+  ]
+  cflags_c = [ 
+    "-Wno-string-conversion", "-Wno-implicit-function-declaration", 
+  ]
+}
+
+pkg_config("libevdev"){
+  packages = [
+    "libevdev",
+  ]
 }
 
 executable("weston") {
-  include_dirs = [
-      "//third_party/weston",
-      "//third_party/weston/version",
-      "//third_party/weston/include",
+  sources = [
+    "version/git-version.h",
+    "src/compositor/main.c",
+    "src/compositor/text-backend.c",
+    "src/compositor/weston-screenshooter.c",
   ]
-   deps = [ ":compositor" ]
-}
+  include_dirs = [
+    "config/linux/x64",
+    "/home/hyperion/intern/no_space/summer2019/igalia/include",
+    "version",
+    "src/include",
+    ".",
+    "//third_party/libevdev/src/include",
+    "//src/out/35debug/include",
+    "$target_gen_dir/include",
+    "build/include",
+    "src",
+    "src/shared",
+  ]
+  deps = [
+    "//third_party/weston:weston_screenshooter",
+    "//third_party/weston:input_method_unstable_v1",
+    "//third_party/wayland-protocols:text_input_protocol",
+    ":lib_libshared",
+    ":lib_weston",
+    ":renderer_gl",
+    #"//third_party/libevdev",
+    "//third_party/mesa_headers",
+  ]
 
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+  ]
+
+  public_configs = [
+    ":libinput",
+    ":libevdev",
+  ]
+  cflags_c = [ 
+    "-Wno-string-conversion", "-Wno-implicit-function-declaration", 
+  ]
+}

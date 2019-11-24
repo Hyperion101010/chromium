@@ -1508,6 +1508,11 @@ deps = {
   'src/third_party/wuffs/src':
     Var('skia_git') + '/external/github.com/google/wuffs.git' + '@' +  Var('wuffs_revision'),
 
+ 'src/third_party/weston/src': {
+    'url': 'https://gitlab.freedesktop.org/wayland/weston.git' + '@' + 'e2f9c1b76c043dcc86f17a883b575307c6b9be45',
+    'condition': 'checkout_linux',
+  },
+
   'src/third_party/xdg-utils': {
       'url': Var('chromium_git') + '/chromium/deps/xdg-utils.git' + '@' + 'd80274d5869b17b8c9067a1022e4416ee7ed5e0d',
       'condition': 'checkout_linux',

@@ -15,7 +15,8 @@ import sys
 import tempfile
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-CHROMIUM_ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', '..'))
+BASE_DIR = BASE_DIR + '/src'
+CHROMIUM_ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', '..', '..'))
 
 sys.path.append(os.path.join(CHROMIUM_ROOT_DIR, 'build'))
 import gn_helpers
@@ -23,7 +24,12 @@ import gn_helpers
 MESON = ['meson']
 
 DEFAULT_BUILD_ARGS = [
-    '-Dbuild_tools=false', '-Dbuild_tests=false','--buildtype', 'release',
+    '-Dbuild_tests=false','--buildtype', 'release', '-Dbackend-drm-screencast-vaapi=false','-Dbackend-rdp=false',
+    '-Dxwayland=false', '-Dcolor-management-lcms=false',
+    '-Dpipewire=false',
+    '-Dcolor-management-colord=false', '-Dremoting=false','-Dsimple-dmabuf-drm=auto',
+    '-Dshell-ivi=false', '-Ddemo-clients=false', '-Dsimple-clients=egl', '-Dlauncher-logind=false',
+    '-Dweston-launch=false', '-Dxwayland=false', '-Dscreenshare=false', '-Dsystemd=false',
 ]
 
 WINDOWS_BUILD_ARGS = ['-Dc_winlibs=']
@@ -128,7 +134,7 @@ def GenerateGitConfig(config_dir,env,special_args=[]):
   temp_dir = tempfile.mkdtemp()
   PrintAndCheckCall(
       MESON + DEFAULT_BUILD_ARGS + special_args + [temp_dir],
-      cwd='.',
+      cwd='src',
       env=env)
   # We don't want non-visible log strings polluting the official binary.
   RewriteGitFile(
@@ -141,7 +147,7 @@ def GenerateConfig(config_dir, env, special_args=[]):
   temp_dir = tempfile.mkdtemp()
   PrintAndCheckCall(
       MESON + DEFAULT_BUILD_ARGS + special_args + [temp_dir],
-      cwd='.',
+      cwd='src',
       env=env)
 
   # We don't want non-visible log strings polluting the official binary.
@@ -181,6 +187,7 @@ def GenerateWindowsArm64Config(src_dir):
 
 
 def main():
+  print(os.path.abspath(os.path.dirname(__file__)))
   linux_env = os.environ
   linux_env['CC'] = 'clang'
 
@@ -215,4 +222,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-
