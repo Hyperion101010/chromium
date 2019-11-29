@@ -111,7 +111,7 @@ pkg_config("pixman"){
   packages = ["pixman-1"]
 }
 
-pkg_config("glib_conf"){
+pkg_config("glib"){
   packages = ["glib-2.0",
              "gobject-2.0",
              "gthread-2.0",
@@ -126,14 +126,14 @@ source_set("wayland_protocol"){
   sources = [ "//third_party/wayland/protocol/wayland-protocol.c" ]
 }
 
-pkg_config("cairo_packages"){
+pkg_config("cairo"){
   packages = [
   "cairo",
   "pangocairo",
   "pango"]
 }
 
-pkg_config("drm"){
+pkg_config("libdrm"){
   packages = [
     "libdrm",
     "libdrm_intel",
@@ -146,7 +146,7 @@ pkg_config("xkbcommon"){
   ]
 }
 
-pkg_config("wayland_server"){
+pkg_config("wayland-server"){
   packages = [
     "wayland-server",
   ]
@@ -154,13 +154,13 @@ pkg_config("wayland_server"){
 
 #protocol
 
-pkg_config("wayland_scanner"){
+pkg_config("wayland-scanner"){
   packages = [
     "wayland-scanner",
   ]
 }
 
-pkg_config("wayland_protocols"){
+pkg_config("wayland-protocols"){
   packages = [
     "wayland-protocols",
   ]
@@ -168,7 +168,7 @@ pkg_config("wayland_protocols"){
 
 #shared
 
-pkg_config("wayland_client"){
+pkg_config("wayland-client"){
   packages = [
     "wayland-client",
   ]
@@ -180,14 +180,21 @@ pkg_config("libpng"){
   ]
 }
 
-static_library("libudev"){  #can't include as deps cause there was no BUILD.gn script to depend on in libudev
+pkg_config("libwebp"){
+  packages = [
+    "libwebp",
+  ]
+}
+
+shared_library("libudev"){  #can't include as deps cause there was no BUILD.gn script to depend on in libudev
   sources = [
     "//third_party/libudev/libudev0.h",
     "//third_party/libudev/libudev1.h",
   ]
+  output_name = "libudev"
 }
 
-static_library("lib_libshared"){
+static_library("libshared"){
   sources = ["src/shared/config-parser.c","src/shared/option-parser.c","src/shared/file-util.c","src/shared/os-compatibility.c","src/shared/xalloc.c",
   ]
 
@@ -197,28 +204,34 @@ static_library("lib_libshared"){
     "config/linux/x64",
   ]
   public_configs = [
-    ":wayland_client",
+    ":wayland-client",
   ]
+  output_name = "shared"
 }
 
-static_library("lib_cairo_shared"){
+static_library("libcairoshared"){
   sources = ["src/shared/image-loader.c","src/shared/cairo-util.c","src/shared/frame.c",]
   include_dirs = [
     "src",
+    "config/linux/x64",
+    "src/include",
+
   ]
   deps = [
-    ":lib_libshared",
+    ":libshared",
   ]
   public_configs = [
-    ":cairo_packages",
+    ":cairo",
     ":libpng",
     ":pixman",
+    ":glib",
   ]
+  output_name = "cairoshared"
 }
 
 #libweston
 
-shared_library("lib_weston"){
+shared_library("libweston"){
 
   sources = [
   "version/git-version.h",
@@ -259,7 +272,7 @@ shared_library("lib_weston"){
   ]
 
   public_configs = [
-    ":wayland_server",
+    ":wayland-server",
     ":xkbcommon",
     ":pixman",
     ":egl",
@@ -283,26 +296,33 @@ shared_library("lib_weston"){
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     #":version",
     "//third_party/mesa_headers",
-    ":lib_libshared",
+    ":libshared",
   ]
+  #data_deps = [
+  #  ":libshared",
+  #  ":gl-renderer",
+  #  ":drm-backend",
+  #  ":wayland-backend",
+  #]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
     ]
 
     cflags_c = [ 
-    "-Wno-string-conversion", "-Wno-implicit-function-declaration",
+    "-Wno-string-conversion", "-Wno-implicit-function-declaration", "-Wno-shift-negative-value",
   ]
-
+  output_name = "libweston.so"
 }
 
 
-static_library("lib_session_helper"){
+static_library("libsessionhelper"){
   include_dirs = [
   "src",
   "src/shared",
   "src/libweston",
   "src/include",
+  "config/linux/x64",
   ]
   sources = [
     "src/libweston/launcher-direct.c",
@@ -313,23 +333,26 @@ static_library("lib_session_helper"){
   public_configs = [
     ":pixman",
     ":xkbcommon",
-    ":wayland_server",
+    ":wayland-server",
   ]
+  output_name = "sessionhelper"
 }
 
-static_library("dep_vertex_clipping"){
+static_library("vertex-clipping"){
   sources = [
     "src/libweston/vertex-clipping.c",
   ]
   include_dirs = [
     "src/libweston",
   ]
+  output_name = "vertex-clipping"
 }
 
-static_library("lib_libinput_backend"){
+static_library("libinput-backend"){
   include_dirs = [
     "src/libweston",
     "src",
+    "config/linux/x64",
   ]
   sources = [
     "src/libweston/libinput-device.c",
@@ -337,8 +360,12 @@ static_library("lib_libinput_backend"){
   ]
   deps = [
     ":libudev",
-    ":dep_vertex_clipping",
+    ":vertex-clipping",
   ]
+  #data_deps = [
+  #  ":libudev",
+  #]
+  output_name = "input-backend"
 }
 
 #renderer-gl
@@ -349,7 +376,7 @@ pkg_config("egl"){
   ]
 }
 
-shared_library("renderer_gl"){
+shared_library("gl-renderer"){
   sources= [
     "src/libweston/renderer-gl/gl-renderer.c",
     "src/libweston/vertex-clipping.c",    
@@ -369,29 +396,34 @@ shared_library("renderer_gl"){
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/angle:libEGL",
     "//third_party/angle:libGLESv2",
-    ":lib_weston",
+    ":libweston",
   ]
+  #data_deps = [
+  #  ":libweston",
+  #]
   public_configs = [
     ":pixman",
     ":egl",
     ":xkbcommon",
-    ":wayland_server",
+    ":wayland-server",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
+  output_name = "gl-renderer.so"
 }
 
 #backend-drm
 
-static_library("lib_backlight"){
+static_library("libbacklight"){
   include_dirs = [
     "src",
     "src/libweston/backend-drm",
+    "config/linux/x64",
   ]
   sources = [
-    "src/libbacklight.c",
+    "src/libweston/backend-drm/libbacklight.c",
   ]
   defines = [
     "BUILD_DRM_COMPOSITOR = 1",
@@ -400,6 +432,10 @@ static_library("lib_backlight"){
     "//third_party/libdrm",
     ":libudev",
   ]
+  #data_deps = [
+  #  ":libudev",
+  #]
+  output_name = "backlight"
 }
 
 pkg_config("gbm"){
@@ -408,20 +444,21 @@ pkg_config("gbm"){
   ]
 }
 
-static_library("backend_drm"){
+shared_library("drm-backend"){
   sources = ["src/libweston/backend-drm/drm.c","src/libweston/backend-drm/fb.c","src/libweston/backend-drm/modes.c","src/libweston/backend-drm/kms.c","src/libweston/backend-drm/state-helpers.c","src/libweston/backend-drm/state-propose.c",
   ]
   include_dirs = [
     "src/libweston/backend-drm",
     "src",
     "src/shared",
+    "config/linux/x64",
     "//third_party/libevdev/src/include",
   ]
   deps = [
-    ":lib_weston",
-    ":lib_session_helper",
-    ":lib_libinput_backend",
-    ":lib_backlight",
+    ":libweston",
+    ":libsessionhelper",
+    ":libinput-backend",
+    ":libbacklight",
     #"//third_party/wayland-protocols:presentatiion_time_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     ":libudev",
@@ -440,17 +477,40 @@ static_library("backend_drm"){
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
+  output_name = "drm-backend"
 }
 
-#backend_wayland
+#wayland-backend
 
-static_library("backend_wayland"){
+pkg_config("wayland-cursor"){
+  packages = [
+    "wayland-cursor",
+  ]
+}
+
+pkg_config("wayland-egl"){
+  packages = [
+    "wayland-egl",
+  ]
+}
+
+pkg_config("libjpeg"){
+  packages = [
+    "libjpeg",
+  ]
+}
+
+shared_library("wayland-backend"){
   sources = [
     "src/libweston/backend-wayland/wayland.c",
   ]
   include_dirs = [
     "src/shared",
     "//third_party/weston",
+    "config/linux/x64",
+    "src",
+    "src/include",
+    "src/libweston",
   ]
   defines = [
     "BUILD_WAYLAND_COMPOSITOR = 1",
@@ -459,23 +519,30 @@ static_library("backend_wayland"){
     "//third_party/weston:fullscreen_shell",
     "//third_party/weston:xdg_shell",
     "//third_party/wayland-protocols:presentation_time_protocol",
-    ":lib_weston",
+    ":libweston",
+    ":libcairoshared",
     #wayland cursor no such lib found
   ]
   public_configs = [
-    ":cairo_packages",
-    ":wayland_client",
+    ":cairo",
+    ":wayland-client",
     ":pixman",
+    ":egl",
+    ":wayland-cursor",
+    ":wayland-egl",
+    ":libjpeg",
+    ":libwebp",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
+  output_name = "wayland-backend.so"
 }
 
-#libweston_desktop
+#libweston-desktop
 
-shared_library("libweston_desktop"){
+shared_library("libweston-desktop"){
   sources = [
     "src/libweston-desktop/client.c",
     "src/libweston-desktop/libweston-desktop.c",
@@ -487,11 +554,12 @@ shared_library("libweston_desktop"){
   ]
   deps = [
     "//third_party/weston:xdg_shell",
-    ":lib_weston",
+    ":libweston",
   ]
   include_dirs = [
     "libweston-desktop",
   ]
+  output_name = "weston-desktop.so"
 }
 
 #compositor
@@ -499,49 +567,6 @@ shared_library("libweston_desktop"){
 pkg_config("libinput"){
   packages = [
     "libinput",
-  ]
-}
-
-static_library("lib_compositor"){
-  sources = [
-    "version/git-version.h",
-    "src/compositor/main.c",
-    "src/compositor/text-backend.c",
-    "src/compositor/weston-screenshooter.c",
-  ]
-  include_dirs = [
-    "config/linux/x64",
-    "/home/hyperion/intern/no_space/summer2019/igalia/include",
-    "version",
-    "src/include",
-    ".",
-    "//third_party/libevdev/src/include",
-    "//src/out/35debug/include",
-    "$target_gen_dir/include",
-    "build/include",
-    "src",
-  ]
-  deps = [
-    "//third_party/weston:weston_screenshooter",
-    "//third_party/weston:input_method_unstable_v1",
-    "//third_party/wayland-protocols:text_input_protocol",
-    ":lib_libshared",
-    ":lib_weston",
-    ":renderer_gl",
-    "//third_party/libevdev",
-    "//third_party/mesa_headers",
-  ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-  ]
-
-  public_configs = [
-    ":libinput",
-  ]
-  cflags_c = [ 
-    "-Wno-string-conversion", "-Wno-implicit-function-declaration", 
   ]
 }
 
@@ -558,30 +583,37 @@ executable("weston") {
     "src/compositor/text-backend.c",
     "src/compositor/weston-screenshooter.c",
   ]
+
+
   include_dirs = [
     "config/linux/x64",
     "/home/hyperion/intern/no_space/summer2019/igalia/include",
     "version",
     "src/include",
-    ".",
+    "src",
     "//third_party/libevdev/src/include",
     "//src/out/35debug/include",
     "$target_gen_dir/include",
-    "build/include",
-    "src",
+    "src/build/include",
     "src/shared",
   ]
   deps = [
     "//third_party/weston:weston_screenshooter",
     "//third_party/weston:input_method_unstable_v1",
     "//third_party/wayland-protocols:text_input_protocol",
-    ":lib_libshared",
-    ":lib_weston",
-    ":renderer_gl",
+    ":libshared",
+    ":wayland-backend",
+    ":libweston",
     #"//third_party/libevdev",
     "//third_party/mesa_headers",
   ]
-
+  data_deps = [
+    ":libweston",
+    ":libshared",
+    ":wayland-backend",
+    #":drm-backend",
+    ":gl-renderer",
+  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
@@ -590,8 +622,10 @@ executable("weston") {
   public_configs = [
     ":libinput",
     ":libevdev",
+    ":pixman",
   ]
   cflags_c = [ 
     "-Wno-string-conversion", "-Wno-implicit-function-declaration", 
   ]
+
 }
