@@ -8,31 +8,32 @@ import("//build/config/linux/pkg_config.gni")
 import("//build/util/process_version.gni")
 import("//build/shim_headers.gni")
 import("//third_party/wayland/wayland_protocol.gni")
+import("//build/toolchain/toolchain.gni")
 
 wayland_protocol("input_method_unstable_v1"){
   sources = [
-    "src/share/wayland-protocols/unstable/input-method/input-method-unstable-v1.xml",
+    "//third_party/wayland-protocols/src/unstable/input-method/input-method-unstable-v1.xml",
   ]
 }
 
 wayland_protocol("xdg_output"){
   sources = [
-    "src/share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml",
+    "//third_party/wayland-protocols/src/unstable/xdg-output/xdg-output-unstable-v1.xml",
   ]
 }
 
-wayland_protocol("xdg_foreign"){
-  sources = [
-    "src/share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
-    "src/share/wayland-protocols/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
-  ]
-}
+#wayland_protocol("xdg_foreign"){
+#  sources = [
+#    "//third-party/wayland-protocols/src/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
+#    "//third-party/wayland-protocols/src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
+#  ]
+#}
 
-wayland_protocol("xdg_decoration"){
-  sources = [
-    "src/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml",
-  ]
-}
+#wayland_protocol("xdg_decoration"){
+#  sources = [
+#    "//third-party/wayland-protocols/src/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml",
+#  ]
+#}
 
 wayland_protocol("ivi_application"){
   sources = [
@@ -44,11 +45,11 @@ wayland_protocol("ivi_hmi_controller"){
     "src/protocol/ivi-hmi-controller.xml",]
 }
 
-wayland_protocol("fullscreen_shell"){
-  sources = [
-    "src/share/wayland-protocols/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
-  ]
-}
+#wayland_protocol("fullscreen_shell"){
+#  sources = [
+#    "//third_party/wayland-protocols/src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
+#  ]
+#}
 
 wayland_protocol("text_cursor_position"){
   sources = [
@@ -81,20 +82,20 @@ wayland_protocol("weston_touch_calibration"){
 
 wayland_protocol("tablet"){
   sources = [
-    "src/share/wayland-protocols/unstable/tablet/tablet-unstable-v1.xml",
-    "src/share/wayland-protocols/unstable/tablet/tablet-unstable-v2.xml"
+    "//third_party/wayland-protocols/src/unstable/tablet/tablet-unstable-v1.xml",
+    "//third_party/wayland-protocols/src/unstable/tablet/tablet-unstable-v2.xml"
   ]
 }
 
 wayland_protocol("xdg_shell") {
   sources = [
-    "src/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml",
-  ]
+    "//third_party/wayland-protocols/src/stable/xdg-shell/xdg-shell.xml",
+ ]
 }
 
 wayland_protocol("pointer_constraints") {
   sources = [
-    "src/share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
+    "//third_party/wayland-protocols/src/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
   ]
 }
 
@@ -267,7 +268,6 @@ shared_library("libweston"){
     "src",
     "config/linux/x64",
     "version",
-    "src/build/include",
     "/home/hyperion/intern/no_space/summer2019/igalia/include",
   ]
 
@@ -312,7 +312,7 @@ shared_library("libweston"){
     cflags_c = [ 
     "-Wno-string-conversion", "-Wno-implicit-function-declaration", "-Wno-shift-negative-value",
   ]
-  output_name = "libweston.so"
+  output_name = "libweston"
 }
 
 
@@ -411,7 +411,10 @@ shared_library("gl-renderer"){
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
-  output_name = "gl-renderer.so"
+  cflags_c = [
+    "-Wno-int-conversion",
+  ]
+  output_name = "gl-renderer"
 }
 
 #backend-drm
@@ -500,6 +503,11 @@ pkg_config("libjpeg"){
   ]
 }
 
+#copy("copy_wayland_backend"){
+#  sources = ["$root_build_dir/weston/libwayland-backend.so"]
+#  outputs = ["$root_build_dir/weston/wayland-backend.so"]
+#}
+
 shared_library("wayland-backend"){
   sources = [
     "src/libweston/backend-wayland/wayland.c",
@@ -516,7 +524,7 @@ shared_library("wayland-backend"){
     "BUILD_WAYLAND_COMPOSITOR = 1",
   ]
   deps = [
-    "//third_party/weston:fullscreen_shell",
+    "//third_party/wayland-protocols:fullscreen_shell_protocol",
     "//third_party/weston:xdg_shell",
     "//third_party/wayland-protocols:presentation_time_protocol",
     ":libweston",
@@ -537,8 +545,11 @@ shared_library("wayland-backend"){
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
-  output_name = "wayland-backend.so"
+  output_prefix_override = true
+  output_name = "wayland-backend"
 }
+
+
 
 #libweston-desktop
 
@@ -559,7 +570,7 @@ shared_library("libweston-desktop"){
   include_dirs = [
     "libweston-desktop",
   ]
-  output_name = "weston-desktop.so"
+  output_name = "weston-desktop"
 }
 
 #compositor
@@ -594,7 +605,6 @@ executable("weston") {
     "//third_party/libevdev/src/include",
     "//src/out/35debug/include",
     "$target_gen_dir/include",
-    "src/build/include",
     "src/shared",
   ]
   deps = [
@@ -627,5 +637,6 @@ executable("weston") {
   cflags_c = [ 
     "-Wno-string-conversion", "-Wno-implicit-function-declaration", 
   ]
-
+  
 }
+

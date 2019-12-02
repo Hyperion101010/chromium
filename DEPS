@@ -1509,7 +1509,7 @@ deps = {
     Var('skia_git') + '/external/github.com/google/wuffs.git' + '@' +  Var('wuffs_revision'),
 
  'src/third_party/weston/src': {
-    'url': 'https://gitlab.freedesktop.org/wayland/weston.git' + '@' + 'e2f9c1b76c043dcc86f17a883b575307c6b9be45',
+    'url': 'https://gitlab.freedesktop.org/wayland/weston.git' + '@' + 'db905f467169f9f131c5ddc6038296f866d5daeb',
     'condition': 'checkout_linux',
   },
 
