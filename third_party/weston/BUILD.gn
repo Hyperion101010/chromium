@@ -414,6 +414,7 @@ shared_library("gl-renderer"){
   cflags_c = [
     "-Wno-int-conversion",
   ]
+  output_prefix_override = true 
   output_name = "gl-renderer"
 }
 
@@ -568,8 +569,13 @@ shared_library("libweston-desktop"){
     ":libweston",
   ]
   include_dirs = [
-    "libweston-desktop",
+    "src/libweston-desktop",
+    "config/linux/x64",
+    "src",
+    "src/include",
+    "src/shared",
   ]
+  output_prefix_override = true
   output_name = "weston-desktop"
 }
 
@@ -585,6 +591,179 @@ pkg_config("libevdev"){
   packages = [
     "libevdev",
   ]
+}
+
+source_set("compositor") {
+  sources = [
+    "version/git-version.h",
+    "src/compositor/main.c",
+    "src/compositor/text-backend.c",
+    "src/compositor/weston-screenshooter.c",
+  ]
+
+
+  include_dirs = [
+    "config/linux/x64",
+    "/home/hyperion/intern/no_space/summer2019/igalia/include",
+    "version",
+    "src/include",
+    "src",
+    "//third_party/libevdev/src/include",
+    "//src/out/35debug/include",
+    "$target_gen_dir/include",
+    "src/shared",
+  ]
+  deps = [
+    "//third_party/weston:weston_screenshooter",
+    "//third_party/weston:input_method_unstable_v1",
+    "//third_party/wayland-protocols:text_input_protocol",
+    ":libshared",
+    ":wayland-backend",
+    ":libweston",
+    #"//third_party/libevdev",
+    "//third_party/mesa_headers",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+  ]
+
+  public_configs = [
+    ":libinput",
+    ":libevdev",
+    ":pixman",
+  ]
+  cflags_c = [ 
+    "-Wno-string-conversion", "-Wno-implicit-function-declaration", 
+  ]
+  
+}
+
+
+shared_library("toytoolkit"){
+  sources = [
+    "src/clients/window.c",
+    ]
+  include_dirs = [
+    "src",
+    "src/shared",
+    "config/linux/x64",
+    "src/include",
+    "src/clients",
+  ]
+  deps = [
+    ":xdg_shell", 
+    ":text_cursor_position",
+    "//third_party/wayland-protocols:relative_pointer_protocol",
+    ":pointer_constraints",
+    ":ivi_application",
+    ":libcairoshared",
+  ]
+  public_configs = [
+    ":wayland-client",
+    ":xkbcommon",
+    ":wayland-cursor",
+    ":libjpeg",
+    ":libwebp",
+  ]
+  cflags_c = [
+    "-Wno-string-conversion",
+
+  ]
+  public = [
+    "src/clients/window.h"
+  ]
+}
+
+executable("weston-keyboard"){
+  sources = [
+    "src/clients/keyboard.c",
+  ]
+  include_dirs = [
+    "src",
+    "src/clients",
+    "config/linux/x64",
+    "src/include",
+  ]
+  #precompiled_header = "src/clients/window.h"
+  deps = [
+    "//third_party/wayland-protocols:text_input_protocol",
+    ":input_method_unstable_v1",
+    ":toytoolkit",
+    ":libcairoshared",
+  ]
+    public = [
+    "src/clients/window.h"
+  ]
+  data_deps = [
+    ":toytoolkit",
+  ]
+}
+
+executable("weston-screenshooter"){
+  sources = [
+    "src/clients/screenshot.c",
+  ]
+  include_dirs = [
+    "src",
+    "src/clients",
+    "config/linux/x64",
+    "src/include",
+  ]
+  #precompiled_header = "src/clients/window.h"
+  deps = [
+    ":weston_screenshooter",
+    ":toytoolkit",
+    ":libcairoshared",
+    #":window_headers",
+  ]
+}
+
+executable("weston-desktop-shell"){
+  sources= [
+    "src/clients/desktop-shell.c",
+  ]
+  include_dirs = [
+    "src",
+    "src/clients",
+    "config/linux/x64",
+    "src/include",
+  ]
+  deps = [
+    ":weston_desktop_shell",
+    ":toytoolkit",
+    ":libcairoshared",
+    #":window_headers",
+  ]
+  cflags_c = [
+    "-Wno-string-conversion",
+  ]
+}
+
+shared_library("desktop-shell"){
+  sources = [
+    "src/desktop-shell/shell.c",
+    "src/desktop-shell/exposay.c",
+    "src/desktop-shell/input-panel.c",
+    "src/shared/matrix.c",
+  ]
+  include_dirs = [
+    "src/desktop-shell",
+    "src/shared",
+    "config/linux/x64", 
+    "src",
+    "src/include",
+    "src/clients",
+  ]
+  deps = [
+    ":weston_desktop_shell",
+    ":input_method_unstable_v1",
+    ":libshared",
+    ":libweston-desktop",
+    ":libweston",
+    ":libcairoshared",
+  ]
+  output_prefix_override = true
 }
 
 executable("weston") {
@@ -616,12 +795,16 @@ executable("weston") {
     ":libweston",
     #"//third_party/libevdev",
     "//third_party/mesa_headers",
+    ":weston-keyboard",
+    ":weston-screenshooter",
+    ":weston-desktop-shell",
   ]
   data_deps = [
     ":libweston",
     ":libshared",
     ":wayland-backend",
     #":drm-backend",
+    ":desktop-shell",
     ":gl-renderer",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
