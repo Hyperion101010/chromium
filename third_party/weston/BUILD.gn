@@ -192,6 +192,7 @@ shared_library("libudev"){  #can't include as deps cause there was no BUILD.gn s
     "//third_party/libudev/libudev0.h",
     "//third_party/libudev/libudev1.h",
   ]
+  output_prefix_override = true 
   output_name = "libudev"
 }
 
@@ -312,6 +313,7 @@ shared_library("libweston"){
     cflags_c = [ 
     "-Wno-string-conversion", "-Wno-implicit-function-declaration", "-Wno-shift-negative-value",
   ]
+  output_prefix_override = true 
   output_name = "libweston"
 }
 
@@ -335,6 +337,9 @@ static_library("libsessionhelper"){
     ":xkbcommon",
     ":wayland-server",
   ]
+  deps = [
+    "//third_party/libdrm",
+  ]
   output_name = "sessionhelper"
 }
 
@@ -353,6 +358,7 @@ static_library("libinput-backend"){
     "src/libweston",
     "src",
     "config/linux/x64",
+    "src/include",
   ]
   sources = [
     "src/libweston/libinput-device.c",
@@ -362,9 +368,15 @@ static_library("libinput-backend"){
     ":libudev",
     ":vertex-clipping",
   ]
+  public_configs = [
+    ":pixman",
+  ]
   #data_deps = [
   #  ":libudev",
   #]
+  cflags_c = [
+    "-Wno-string-conversion",
+  ]
   output_name = "input-backend"
 }
 
@@ -448,7 +460,7 @@ pkg_config("gbm"){
   ]
 }
 
-shared_library("drm-backend"){
+static_library("drm-backend"){
   sources = ["src/libweston/backend-drm/drm.c","src/libweston/backend-drm/fb.c","src/libweston/backend-drm/modes.c","src/libweston/backend-drm/kms.c","src/libweston/backend-drm/state-helpers.c","src/libweston/backend-drm/state-propose.c",
   ]
   include_dirs = [
@@ -457,6 +469,8 @@ shared_library("drm-backend"){
     "src/shared",
     "config/linux/x64",
     "//third_party/libevdev/src/include",
+    "src/include",
+    "src/libweston",
   ]
   deps = [
     ":libweston",
@@ -467,6 +481,7 @@ shared_library("drm-backend"){
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     ":libudev",
     "//third_party/libdrm",
+    "//third_party/wayland-protocols:presentation_time_protocol",
   ]
   public_configs = [
     ":gbm",
@@ -481,6 +496,10 @@ shared_library("drm-backend"){
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
+  cflags_c = [
+    "-Wno-string-conversion",
+  ]
+  output_prefix_override = true 
   output_name = "drm-backend"
 }
 
@@ -554,7 +573,7 @@ shared_library("wayland-backend"){
 
 #libweston-desktop
 
-shared_library("libweston-desktop"){
+static_library("libweston-desktop"){
   sources = [
     "src/libweston-desktop/client.c",
     "src/libweston-desktop/libweston-desktop.c",
@@ -567,6 +586,7 @@ shared_library("libweston-desktop"){
   deps = [
     "//third_party/weston:xdg_shell",
     ":libweston",
+    ":toytoolkit",
   ]
   include_dirs = [
     "src/libweston-desktop",
@@ -639,8 +659,7 @@ source_set("compositor") {
   
 }
 
-
-shared_library("toytoolkit"){
+static_library("toytoolkit"){
   sources = [
     "src/clients/window.c",
     ]
@@ -677,6 +696,7 @@ shared_library("toytoolkit"){
 
 executable("weston-keyboard"){
   sources = [
+    "src/clients/window.h",
     "src/clients/keyboard.c",
   ]
   include_dirs = [
@@ -691,9 +711,6 @@ executable("weston-keyboard"){
     ":input_method_unstable_v1",
     ":toytoolkit",
     ":libcairoshared",
-  ]
-    public = [
-    "src/clients/window.h"
   ]
   data_deps = [
     ":toytoolkit",
@@ -717,6 +734,9 @@ executable("weston-screenshooter"){
     ":libcairoshared",
     #":window_headers",
   ]
+  data_deps = [
+    ":toytoolkit",
+  ]
 }
 
 executable("weston-desktop-shell"){
@@ -735,12 +755,15 @@ executable("weston-desktop-shell"){
     ":libcairoshared",
     #":window_headers",
   ]
+  data_deps = [
+    ":toytoolkit",
+  ]
   cflags_c = [
     "-Wno-string-conversion",
   ]
 }
 
-shared_library("desktop-shell"){
+source_set("desktop-shell"){
   sources = [
     "src/desktop-shell/shell.c",
     "src/desktop-shell/exposay.c",
@@ -762,8 +785,37 @@ shared_library("desktop-shell"){
     ":libweston-desktop",
     ":libweston",
     ":libcairoshared",
+    ":toytoolkit",
   ]
-  output_prefix_override = true
+}
+
+shared_library("desktop-shell-shared"){
+  sources = [
+    "src/desktop-shell/shell.c",
+    "src/desktop-shell/exposay.c",
+    "src/desktop-shell/input-panel.c",
+    "src/shared/matrix.c",
+  ]
+  include_dirs = [
+    "src/desktop-shell",
+    "src/shared",
+    "config/linux/x64", 
+    "src",
+    "src/include",
+    "src/clients",
+  ]
+  deps = [
+    ":desktop-shell",
+    ":weston_desktop_shell",
+    ":input_method_unstable_v1",
+    ":libshared",
+    ":libweston-desktop",
+    ":libweston",
+    ":libcairoshared",
+    ":toytoolkit",
+  ]
+  output_prefix_override = true 
+  output_name = "desktop-shell"
 }
 
 executable("weston") {
@@ -798,14 +850,16 @@ executable("weston") {
     ":weston-keyboard",
     ":weston-screenshooter",
     ":weston-desktop-shell",
+    ":desktop-shell",
+    ":drm-backend",
   ]
   data_deps = [
     ":libweston",
     ":libshared",
     ":wayland-backend",
-    #":drm-backend",
-    ":desktop-shell",
+    ":drm-backend",
     ":gl-renderer",
+    ":desktop-shell-shared",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [

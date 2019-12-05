@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import argparse
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 BASE_DIR = BASE_DIR + '/src'
@@ -30,6 +31,10 @@ DEFAULT_BUILD_ARGS = [
     '-Dcolor-management-colord=false', '-Dremoting=false','-Dsimple-dmabuf-drm=auto',
     '-Dshell-ivi=false', '-Ddemo-clients=false', '-Dsimple-clients=egl', '-Dlauncher-logind=false',
     '-Dweston-launch=false', '-Dxwayland=false', '-Dscreenshare=false', '-Dsystemd=false',
+    #'--datadir=$root_build_dir/obj/third_party/weston',
+    #'--prefix=$root_build_dir',
+    #'--libdir=$root_build_dir',
+    #'--libexecdir=$root_build_dir',
 ]
 
 WINDOWS_BUILD_ARGS = ['-Dc_winlibs=']
@@ -40,7 +45,6 @@ def PrintAndCheckCall(argv, *args, **kwargs):
         ' '.join(argv))
   c = subprocess.check_call(argv, *args, **kwargs)
 
-
 def RewriteFile(path, search_replace):
   with open(path) as f:
     contents = f.read()
@@ -50,7 +54,6 @@ def RewriteFile(path, search_replace):
 
     # Cleanup trailing newlines.
     f.write(contents.strip() + '\n')
-
 
 def SetupWindowsCrossCompileToolchain(target_arch):
   # First retrieve various MSVC and Windows SDK paths.
@@ -137,9 +140,11 @@ def GenerateGitConfig(config_dir,env,special_args=[]):
       cwd='src',
       env=env)
   # We don't want non-visible log strings polluting the official binary.
+  label = subprocess.check_output(["git", "describe", "--always"]).strip()
+  label = label.decode("utf-8")
   RewriteGitFile(
       os.path.join(temp_dir, 'git-version.h'),
-      r'#define BUILD_ID "@VCS_TAG@"')
+      "#define BUILD_ID \"{label}\"".format(label=label))
   CopyGitConfigsAndCleanup(temp_dir, config_dir)
 
 
@@ -184,6 +189,35 @@ def GenerateWindowsArm64Config(src_dir):
       [(r'#define ARCH_X86 1', r'#define ARCH_X86 0'),
        (r'#define ARCH_X86_64 1', r'#define ARCH_X86_64 0'),
        (r'#define ARCH_AARCH64 0', r'#define ARCH_AARCH64 1')])
+
+def ChangeConfigPath( buildir):
+  buildir = "/"+buildir
+  configfile = os.path.abspath(os.path.dirname(__file__))
+  configfile = os.path.join(configfile,"config/linux/x64/config.h")
+  temp_dir = tempfile.mkdtemp()
+  data = ""
+  with open(configfile,'r') as f:
+    for line in f:
+      if "BINDIR" in line:
+        data += "#define BINDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        data +="\n"
+      elif "DATADIR" in line:
+        data += "#define DATADIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir+"obj/third_party/weston")
+        data +="\n"
+      elif "LIBEXECDIR" in line:
+        data += "#define LIBEXECDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        data +="\n"
+      elif "LIBWESTON_MODULEDIR" in line:
+        data += "#define LIBWESTON_MODULEDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        data +="\n"
+      elif "MODULEDIR" in line:
+        data += "#define MODULEDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        data +="\n"
+      else:
+        data += line      
+  RewriteGitFile(os.path.join(temp_dir, 'config.h'),data)
+  CopyConfigsAndCleanup(temp_dir,CHROMIUM_ROOT_DIR+"/third_party/weston/config/linux/x64")
+  print("Replaced paths with real paths")
 
 def libweston_version_generator():
   data = """
@@ -259,12 +293,17 @@ def libweston_version_generator():
 
 def main():
   print(os.path.abspath(os.path.dirname(__file__)))
+  parser = argparse.ArgumentParser("Give output dir name as --buildir")
+  parser.add_argument('--buildir',action='store')  
+  parser = parser.parse_args(sys.argv[1:])
+  buildir = parser.buildir
   linux_env = os.environ
   linux_env['CC'] = 'clang'
 
   GenerateGitConfig('version',linux_env)
 
   GenerateConfig('config/linux/x64', linux_env)
+  ChangeConfigPath(buildir)
   libweston_version_generator()
 
   #GenerateConfig('config/linux-noasm/x64', linux_env, ['-Dbuild_asm=false'])
