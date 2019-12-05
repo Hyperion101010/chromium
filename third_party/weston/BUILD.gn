@@ -51,6 +51,12 @@ wayland_protocol("ivi_hmi_controller"){
 #  ]
 #}
 
+#wayland_protocol("xdg_shell_unstable_v6"){
+#  sources = [
+#    "//third_party/wayland-protocols/src/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
+#  ]
+#}
+
 wayland_protocol("text_cursor_position"){
   sources = [
     "src/protocol/text-cursor-position.xml",]
@@ -534,7 +540,6 @@ shared_library("wayland-backend"){
   ]
   include_dirs = [
     "src/shared",
-    "//third_party/weston",
     "config/linux/x64",
     "src",
     "src/include",
@@ -582,21 +587,24 @@ static_library("libweston-desktop"){
     "src/libweston-desktop/xwayland.c",
     "src/libweston-desktop/wl-shell.c",
     "src/libweston-desktop/libweston-desktop.h",
+    "src/libweston-desktop/internal.h",
   ]
   deps = [
     "//third_party/weston:xdg_shell",
+    "//third_party/wayland-protocols:xdg_shell_protocol_v6",
     ":libweston",
     ":toytoolkit",
   ]
-  include_dirs = [
+ include_dirs = [
     "src/libweston-desktop",
     "config/linux/x64",
     "src",
     "src/include",
     "src/shared",
   ]
-  output_prefix_override = true
-  output_name = "weston-desktop"
+  public_configs = [
+    ":wayland-server",
+  ]
 }
 
 #compositor
@@ -687,11 +695,42 @@ static_library("toytoolkit"){
   ]
   cflags_c = [
     "-Wno-string-conversion",
+  ]
+}
 
+shared_library("toytoolkit-shared"){
+  precompiled_header = "src/clients/window.h"
+  precompiled_source = "src/clients/window.c" 
+    #sources = [
+    #"src/clients/window.c",
+    #]
+  include_dirs = [
+    "src",
+    "src/shared",
+    "config/linux/x64",
+    "src/include",
+    "src/clients",
   ]
-  public = [
-    "src/clients/window.h"
+  deps = [
+    ":xdg_shell", 
+    ":text_cursor_position",
+    "//third_party/wayland-protocols:relative_pointer_protocol",
+    ":pointer_constraints",
+    ":ivi_application",
+    ":libcairoshared",
   ]
+  public_configs = [
+    ":wayland-client",
+    ":xkbcommon",
+    ":wayland-cursor",
+    ":libjpeg",
+    ":libwebp",
+  ]
+  cflags_c = [
+    "-Wno-string-conversion",
+  ]
+  output_prefix_override = true 
+  output_name = "toytoolkit"
 }
 
 executable("weston-keyboard"){
@@ -713,7 +752,7 @@ executable("weston-keyboard"){
     ":libcairoshared",
   ]
   data_deps = [
-    ":toytoolkit",
+    ":toytoolkit-shared",
   ]
 }
 
@@ -730,7 +769,7 @@ executable("weston-screenshooter"){
   #precompiled_header = "src/clients/window.h"
   deps = [
     ":weston_screenshooter",
-    ":toytoolkit",
+    ":toytoolkit-shared",
     ":libcairoshared",
     #":window_headers",
   ]
@@ -756,19 +795,20 @@ executable("weston-desktop-shell"){
     #":window_headers",
   ]
   data_deps = [
-    ":toytoolkit",
+    ":toytoolkit-shared",
   ]
   cflags_c = [
     "-Wno-string-conversion",
   ]
 }
 
-source_set("desktop-shell"){
+static_library("desktop-shell"){
   sources = [
     "src/desktop-shell/shell.c",
     "src/desktop-shell/exposay.c",
     "src/desktop-shell/input-panel.c",
-    "src/shared/matrix.c",
+    "src/shared/matrix.c",  
+    "src/clients/window.h",
   ]
   include_dirs = [
     "src/desktop-shell",
@@ -786,37 +826,34 @@ source_set("desktop-shell"){
     ":libweston",
     ":libcairoshared",
     ":toytoolkit",
-  ]
-}
-
-shared_library("desktop-shell-shared"){
-  sources = [
-    "src/desktop-shell/shell.c",
-    "src/desktop-shell/exposay.c",
-    "src/desktop-shell/input-panel.c",
-    "src/shared/matrix.c",
-  ]
-  include_dirs = [
-    "src/desktop-shell",
-    "src/shared",
-    "config/linux/x64", 
-    "src",
-    "src/include",
-    "src/clients",
-  ]
-  deps = [
-    ":desktop-shell",
-    ":weston_desktop_shell",
-    ":input_method_unstable_v1",
-    ":libshared",
-    ":libweston-desktop",
-    ":libweston",
-    ":libcairoshared",
-    ":toytoolkit",
+    #"//third_party/wayland-protocols:xdg_shell_protocol_v6",
   ]
   output_prefix_override = true 
   output_name = "desktop-shell"
 }
+
+#shared_library("desktop-shell-shared"){
+#  include_dirs = [
+#    "src/desktop-shell",
+#    "src/shared",
+#    "config/linux/x64", 
+#    "src",
+#    "src/include",
+#    "src/clients",
+#  ]
+#  deps = [
+    #":desktop-shell",
+#    ":weston_desktop_shell",
+#    ":input_method_unstable_v1",
+#    ":libshared",
+    #":libweston-desktop",
+#    ":libweston",
+#    ":libcairoshared",
+#    ":toytoolkit",
+#  ]
+#  output_prefix_override = true 
+#  output_name = "desktop-shell"
+#}
 
 executable("weston") {
   sources = [
@@ -859,7 +896,7 @@ executable("weston") {
     ":wayland-backend",
     ":drm-backend",
     ":gl-renderer",
-    ":desktop-shell-shared",
+    #":desktop-shell-shared",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [

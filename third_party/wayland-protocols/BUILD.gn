@@ -10,9 +10,14 @@ wayland_protocol("gtk_primary_selection_protocol") {
   ]
 }
 
-wayland_protocol("xdg_shell_protocol") {
+wayland_protocol("xdg_shell_protocol_v5") {
   sources = [
     "src/unstable/xdg-shell/xdg-shell-unstable-v5.xml",
+  ]
+}
+
+wayland_protocol("xdg_shell_protocol_v6"){
+  sources = [
     "src/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
   ]
 }
