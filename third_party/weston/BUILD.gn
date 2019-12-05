@@ -99,11 +99,11 @@ wayland_protocol("xdg_shell") {
  ]
 }
 
-wayland_protocol("pointer_constraints") {
-  sources = [
-    "//third_party/wayland-protocols/src/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
-  ]
-}
+#wayland_protocol("pointer_constraints") {
+#  sources = [
+#    "//third_party/wayland-protocols/src/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
+#  ]
+#}
 
 # This script is not for libweston version file, need a workaround on it
 #process_version("version"){
@@ -291,7 +291,7 @@ shared_library("libweston"){
     "//third_party/weston:weston_debug",
     "//third_party/weston:weston_screenshooter",
     "//third_party/weston:weston_touch_calibration",
-    "//third_party/weston:pointer_constraints",
+    "//third_party/wayland-protocols:pointer_constraints_protocol",
     "//third_party/weston:xdg_output",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/weston:input_method_unstable_v1",
@@ -682,7 +682,7 @@ static_library("toytoolkit"){
     ":xdg_shell", 
     ":text_cursor_position",
     "//third_party/wayland-protocols:relative_pointer_protocol",
-    ":pointer_constraints",
+    "//third_party/wayland-protocols:pointer_constraints_protocol",
     ":ivi_application",
     ":libcairoshared",
   ]
@@ -715,7 +715,7 @@ shared_library("toytoolkit-shared"){
     ":xdg_shell", 
     ":text_cursor_position",
     "//third_party/wayland-protocols:relative_pointer_protocol",
-    ":pointer_constraints",
+    "//third_party/wayland-protocols:pointer_constraints_protocol",
     ":ivi_application",
     ":libcairoshared",
   ]
@@ -802,14 +802,18 @@ executable("weston-desktop-shell"){
   ]
 }
 
-static_library("desktop-shell"){
+shared_library("desktop-shell"){
   sources = [
     "src/desktop-shell/shell.c",
     "src/desktop-shell/exposay.c",
     "src/desktop-shell/input-panel.c",
     "src/shared/matrix.c",  
     "src/clients/window.h",
+    "src/libweston-desktop/xdg-shell-v6.c",
+    "src/libweston-desktop/xdg-shell.c",
   ]
+  #precompiled_header = ""
+  #precompiled_source = "src/libweston-desktop/libweston-desktop.c"
   include_dirs = [
     "src/desktop-shell",
     "src/shared",
@@ -826,7 +830,16 @@ static_library("desktop-shell"){
     ":libweston",
     ":libcairoshared",
     ":toytoolkit",
-    #"//third_party/wayland-protocols:xdg_shell_protocol_v6",
+    ":xdg_shell",
+    "//third_party/wayland-protocols:xdg_shell_protocol_v6",
+    ":weston_screenshooter",
+    ":compositor",
+  ]
+  public_configs = [
+    ":wayland-server",
+  ]
+  cflags_c = [
+    "-Wno-extra-semi",
   ]
   output_prefix_override = true 
   output_name = "desktop-shell"

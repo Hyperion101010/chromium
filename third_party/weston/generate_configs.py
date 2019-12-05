@@ -202,7 +202,7 @@ def ChangeConfigPath( buildir):
         data += "#define BINDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
         data +="\n"
       elif "DATADIR" in line:
-        data += "#define DATADIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir+"obj/third_party/weston")
+        data += "#define DATADIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir+"/obj/third_party/weston")
         data +="\n"
       elif "LIBEXECDIR" in line:
         data += "#define LIBEXECDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
