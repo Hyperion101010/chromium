@@ -5632,7 +5632,8 @@
   },
   "linux-ozone-rel": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "weston"
     ],
     "gtest_tests": [
       {

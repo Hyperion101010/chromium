@@ -2,10 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ui/ozone/ozone.gni")
+
 # Used by linux-gcc-rel to ensure gcc doesn't choke on clang-only flags.
 executable("empty_main") {
   sources = [
     "empty_main.cc",
+  ]
+}
+
+if (ozone_platform_wayland) {
+  deps = [
+    "//third_party/weston",
   ]
 }
 
