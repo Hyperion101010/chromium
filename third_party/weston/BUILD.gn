@@ -86,33 +86,11 @@ wayland_protocol("weston_touch_calibration"){
   sources = ["src/protocol/weston-touch-calibration.xml",]
 }
 
-wayland_protocol("tablet"){
-  sources = [
-    "//third_party/wayland-protocols/src/unstable/tablet/tablet-unstable-v1.xml",
-    "//third_party/wayland-protocols/src/unstable/tablet/tablet-unstable-v2.xml"
-  ]
-}
-
 wayland_protocol("xdg_shell") {
   sources = [
     "//third_party/wayland-protocols/src/stable/xdg-shell/xdg-shell.xml",
  ]
 }
-
-#wayland_protocol("pointer_constraints") {
-#  sources = [
-#    "//third_party/wayland-protocols/src/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml",
-#  ]
-#}
-
-# This script is not for libweston version file, need a workaround on it
-#process_version("version"){
-#  template_file = "src/include/libweston/version.h.in"
-#  sources = [
-#  "//chrome/VERSION",
-#  ]
-#  output = "$target_gen_dir/include/libweston/version.h"
-#}
 
 pkg_config("pixman"){
   packages = ["pixman-1"]
@@ -214,6 +192,15 @@ static_library("libshared"){
   public_configs = [
     ":wayland-client",
   ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   output_name = "shared"
 }
 
@@ -223,7 +210,15 @@ static_library("libcairoshared"){
     "src",
     "config/linux/x64",
     "src/include",
-
+  ]
+  out_dir = rebase_path(root_out_dir)
+   datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
   ]
   deps = [
     ":libshared",
@@ -301,7 +296,6 @@ shared_library("libweston"){
     "//third_party/wayland-protocols:input_timestamps_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
-    #":version",
     "//third_party/mesa_headers",
     ":libshared",
   ]
@@ -318,6 +312,15 @@ shared_library("libweston"){
 
     cflags_c = [ 
     "-Wno-string-conversion", "-Wno-implicit-function-declaration", "-Wno-shift-negative-value",
+  ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
   ]
   output_prefix_override = true 
   output_name = "libweston"
@@ -337,7 +340,15 @@ static_library("libsessionhelper"){
     "src/libweston/launcher-util.c",
     "src/libweston/launcher-weston-launch.c",
   ]
-
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   public_configs = [
     ":pixman",
     ":xkbcommon",
@@ -374,12 +385,18 @@ static_library("libinput-backend"){
     ":libudev",
     ":vertex-clipping",
   ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   public_configs = [
     ":pixman",
   ]
-  #data_deps = [
-  #  ":libudev",
-  #]
   cflags_c = [
     "-Wno-string-conversion",
   ]
@@ -412,13 +429,22 @@ shared_library("gl-renderer"){
     "//third_party/libdrm",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
-    "//third_party/angle:libEGL",
-    "//third_party/angle:libGLESv2",
+    #"//third_party/angle:libEGL",
+    #"//third_party/angle:libGLESv2",
     ":libweston",
   ]
-  #data_deps = [
-  #  ":libweston",
-  #]
+  libs = [
+    "GL",
+  ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   public_configs = [
     ":pixman",
     ":egl",
@@ -447,16 +473,22 @@ static_library("libbacklight"){
   sources = [
     "src/libweston/backend-drm/libbacklight.c",
   ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
   defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
+  defines += [
     "BUILD_DRM_COMPOSITOR = 1",
   ]
   deps = [
     "//third_party/libdrm",
     ":libudev",
   ]
-  #data_deps = [
-  #  ":libudev",
-  #]
   output_name = "backlight"
 }
 
@@ -483,7 +515,6 @@ static_library("drm-backend"){
     ":libsessionhelper",
     ":libinput-backend",
     ":libbacklight",
-    #"//third_party/wayland-protocols:presentatiion_time_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     ":libudev",
     "//third_party/libdrm",
@@ -497,6 +528,15 @@ static_library("drm-backend"){
     "HAVE_DRM_ADDFB2_MODIFIERS = 1", # if drm > 2.4.71,
     "HAVE_DRM_ATOMIC = 1", #if drm > 2.4.78
     "HAVE_DRM_FORMATS_BLOB = 1", # if drm > 2.4.83
+  ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines += [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -529,11 +569,6 @@ pkg_config("libjpeg"){
   ]
 }
 
-#copy("copy_wayland_backend"){
-#  sources = ["$root_build_dir/weston/libwayland-backend.so"]
-#  outputs = ["$root_build_dir/weston/wayland-backend.so"]
-#}
-
 shared_library("wayland-backend"){
   sources = [
     "src/libweston/backend-wayland/wayland.c",
@@ -554,7 +589,15 @@ shared_library("wayland-backend"){
     "//third_party/wayland-protocols:presentation_time_protocol",
     ":libweston",
     ":libcairoshared",
-    #wayland cursor no such lib found
+  ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines += [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
   ]
   public_configs = [
     ":cairo",
@@ -602,6 +645,15 @@ static_library("libweston-desktop"){
     "src/include",
     "src/shared",
   ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   public_configs = [
     ":wayland-server",
   ]
@@ -648,14 +700,21 @@ source_set("compositor") {
     ":libshared",
     ":wayland-backend",
     ":libweston",
-    #"//third_party/libevdev",
     "//third_party/mesa_headers",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
-
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   public_configs = [
     ":libinput",
     ":libevdev",
@@ -686,6 +745,15 @@ static_library("toytoolkit"){
     ":ivi_application",
     ":libcairoshared",
   ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   public_configs = [
     ":wayland-client",
     ":xkbcommon",
@@ -701,9 +769,6 @@ static_library("toytoolkit"){
 shared_library("toytoolkit-shared"){
   precompiled_header = "src/clients/window.h"
   precompiled_source = "src/clients/window.c" 
-    #sources = [
-    #"src/clients/window.c",
-    #]
   include_dirs = [
     "src",
     "src/shared",
@@ -718,6 +783,15 @@ shared_library("toytoolkit-shared"){
     "//third_party/wayland-protocols:pointer_constraints_protocol",
     ":ivi_application",
     ":libcairoshared",
+  ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
   ]
   public_configs = [
     ":wayland-client",
@@ -744,7 +818,15 @@ executable("weston-keyboard"){
     "config/linux/x64",
     "src/include",
   ]
-  #precompiled_header = "src/clients/window.h"
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   deps = [
     "//third_party/wayland-protocols:text_input_protocol",
     ":input_method_unstable_v1",
@@ -766,12 +848,19 @@ executable("weston-screenshooter"){
     "config/linux/x64",
     "src/include",
   ]
-  #precompiled_header = "src/clients/window.h"
   deps = [
     ":weston_screenshooter",
     ":toytoolkit-shared",
     ":libcairoshared",
-    #":window_headers",
+  ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
   ]
   data_deps = [
     ":toytoolkit",
@@ -792,7 +881,15 @@ executable("weston-desktop-shell"){
     ":weston_desktop_shell",
     ":toytoolkit",
     ":libcairoshared",
-    #":window_headers",
+  ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
   ]
   data_deps = [
     ":toytoolkit-shared",
@@ -812,8 +909,6 @@ shared_library("desktop-shell"){
     "src/libweston-desktop/xdg-shell-v6.c",
     "src/libweston-desktop/xdg-shell.c",
   ]
-  #precompiled_header = ""
-  #precompiled_source = "src/libweston-desktop/libweston-desktop.c"
   include_dirs = [
     "src/desktop-shell",
     "src/shared",
@@ -835,6 +930,15 @@ shared_library("desktop-shell"){
     ":weston_screenshooter",
     ":compositor",
   ]
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   public_configs = [
     ":wayland-server",
   ]
@@ -845,29 +949,6 @@ shared_library("desktop-shell"){
   output_name = "desktop-shell"
 }
 
-#shared_library("desktop-shell-shared"){
-#  include_dirs = [
-#    "src/desktop-shell",
-#    "src/shared",
-#    "config/linux/x64", 
-#    "src",
-#    "src/include",
-#    "src/clients",
-#  ]
-#  deps = [
-    #":desktop-shell",
-#    ":weston_desktop_shell",
-#    ":input_method_unstable_v1",
-#    ":libshared",
-    #":libweston-desktop",
-#    ":libweston",
-#    ":libcairoshared",
-#    ":toytoolkit",
-#  ]
-#  output_prefix_override = true 
-#  output_name = "desktop-shell"
-#}
-
 executable("weston") {
   sources = [
     "version/git-version.h",
@@ -875,8 +956,15 @@ executable("weston") {
     "src/compositor/text-backend.c",
     "src/compositor/weston-screenshooter.c",
   ]
-
-
+  out_dir = rebase_path(root_out_dir)
+  datadir = out_dir + "/obj/third_party/weston"
+  defines = [
+    " BINDIR = \"$out_dir\"",
+    " DATADIR = \"$datadir\"",
+    " LIBEXECDIR = \"$out_dir\"",
+    " LIBWESTON_MODULEDIR =  \"$out_dir\"",
+    " MODULEDIR = \"$out_dir\"",
+  ]
   include_dirs = [
     "config/linux/x64",
     "/home/hyperion/intern/no_space/summer2019/igalia/include",
@@ -909,13 +997,12 @@ executable("weston") {
     ":wayland-backend",
     ":drm-backend",
     ":gl-renderer",
-    #":desktop-shell-shared",
+    ":desktop-shell",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
   ]
-
   public_configs = [
     ":libinput",
     ":libevdev",

@@ -13,7 +13,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import argparse
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 BASE_DIR = BASE_DIR + '/src'
@@ -190,8 +189,8 @@ def GenerateWindowsArm64Config(src_dir):
        (r'#define ARCH_X86_64 1', r'#define ARCH_X86_64 0'),
        (r'#define ARCH_AARCH64 0', r'#define ARCH_AARCH64 1')])
 
-def ChangeConfigPath( buildir):
-  buildir = "/"+buildir
+def ChangeConfigPath( ):
+  #buildir = "/"+buildir
   configfile = os.path.abspath(os.path.dirname(__file__))
   configfile = os.path.join(configfile,"config/linux/x64/config.h")
   temp_dir = tempfile.mkdtemp()
@@ -199,20 +198,25 @@ def ChangeConfigPath( buildir):
   with open(configfile,'r') as f:
     for line in f:
       if "BINDIR" in line:
-        data += "#define BINDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
-        data +="\n"
+        continue
+        #data += "#define BINDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        #data +="\n"
       elif "DATADIR" in line:
-        data += "#define DATADIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir+"/obj/third_party/weston")
-        data +="\n"
+        continue
+        #data += "#define DATADIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir+"/obj/third_party/weston")
+        #data +="\n"
       elif "LIBEXECDIR" in line:
-        data += "#define LIBEXECDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
-        data +="\n"
+        continue
+        #data += "#define LIBEXECDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        #data +="\n"
       elif "LIBWESTON_MODULEDIR" in line:
-        data += "#define LIBWESTON_MODULEDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
-        data +="\n"
+        continue
+        #data += "#define LIBWESTON_MODULEDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        #data +="\n"
       elif "MODULEDIR" in line:
-        data += "#define MODULEDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
-        data +="\n"
+        continue
+        #data += "#define MODULEDIR \"{buildir}\"".format(buildir=CHROMIUM_ROOT_DIR+buildir)
+        #data +="\n"
       else:
         data += line      
   RewriteGitFile(os.path.join(temp_dir, 'config.h'),data)
@@ -292,18 +296,18 @@ def libweston_version_generator():
   print("Created version.h file from version.h.in\n")
 
 def main():
-  print(os.path.abspath(os.path.dirname(__file__)))
-  parser = argparse.ArgumentParser("Give output dir name as --buildir")
-  parser.add_argument('--buildir',action='store')  
-  parser = parser.parse_args(sys.argv[1:])
-  buildir = parser.buildir
+  #print(os.path.abspath(os.path.dirname(__file__)))
+  #parser = argparse.ArgumentParser("Give output dir name as --buildir")
+  #parser.add_argument('--buildir',action='store')  
+  #parser = parser.parse_args(sys.argv[1:])
+  #buildir = parser.buildir
   linux_env = os.environ
   linux_env['CC'] = 'clang'
 
   GenerateGitConfig('version',linux_env)
 
   GenerateConfig('config/linux/x64', linux_env)
-  ChangeConfigPath(buildir)
+  ChangeConfigPath()
   libweston_version_generator()
 
   #GenerateConfig('config/linux-noasm/x64', linux_env, ['-Dbuild_asm=false'])
