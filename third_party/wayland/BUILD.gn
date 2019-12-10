@@ -113,45 +113,42 @@ if (!use_system_libwayland) {
     include_dirs = [ "include/" ]
   }
 
-component("wayland_cursor") {
-  sources = [
-    "src/cursor/convert_font.c",
-    "src/cursor/os-compatibility.c",
-    "src/cursor/wayland-cursor.c",
-    "src/cursor/xcursor.c",
-  ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  public_configs = [ ":wayland_config" ]
-  
-  deps = [
-    ":wayland_client",
-  ]
-  
-  include_dirs = [ "include" ]
-  
-  cflags_c = [
-    "-Wno-unused-function",  
+  component("wayland_cursor") {
+    sources = [
+      "src/cursor/convert_font.c",
+      "src/cursor/os-compatibility.c",
+      "src/cursor/wayland-cursor.c",
+      "src/cursor/xcursor.c",
     ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    public_configs = [ ":wayland_config" ]
+
+    deps = [
+      ":wayland_client",
+    ]
+
+    include_dirs = [ "include" ]
+
+    cflags_c = [ "-Wno-unused-function" ]
   }
 
   component("wayland_egl") {
-  sources = [
-    "src/egl/wayland-egl-abi-check.c",
-    "src/egl/wayland-egl.c",
-  ]
+    sources = [
+      "src/egl/wayland-egl-abi-check.c",
+      "src/egl/wayland-egl.c",
+    ]
 
-   configs -= [ "//build/config/compiler:chromium_code" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
 
-   configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
 
-   public_configs = [ ":wayland_config" ]
-  
-   include_dirs = [ "include" ]
-  
+    public_configs = [ ":wayland_config" ]
+
+    include_dirs = [ "include" ]
   }
 
   executable("wayland_scanner") {
@@ -182,12 +179,12 @@ if (use_system_libwayland) {
     packages = [ "wayland-server" ]
   }
 
-  pkg_config("wayland_cursor_config"){
-    packages = [ "wayland-cursor"]
+  pkg_config("wayland_cursor_config") {
+    packages = [ "wayland-cursor" ]
   }
 
-  pkg_config("wayland_egl_config"){
-    packages = [ "wayland-egl"]
+  pkg_config("wayland_egl_config") {
+    packages = [ "wayland-egl" ]
   }
 
   group("wayland_client") {
@@ -202,11 +199,11 @@ if (use_system_libwayland) {
     public_configs = [ ":wayland_client_config" ]
   }
 
-  group("wayland_cursor"){
-    public_configs = [ ":wayland_cursor_config"]
+  group("wayland_cursor") {
+    public_configs = [ ":wayland_cursor_config" ]
   }
 
-  group("wayland_egl"){
+  group("wayland_egl") {
     public_configs = [ ":wayland_egl_config" ]
   }
 }
