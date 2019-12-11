@@ -25,12 +25,10 @@ MESON = ['meson']
 
 DEFAULT_BUILD_ARGS = [
     '-Dbuild_tests=false','--buildtype', 'release', '-Dbackend-drm-screencast-vaapi=false','-Dbackend-rdp=false',
-    '-Dxwayland=false', '-Dcolor-management-lcms=false',
-    '-Dpipewire=false',
-    '-Dcolor-management-colord=false', '-Dremoting=false','-Dsimple-dmabuf-drm=auto',
-    '-Dshell-ivi=false', '-Ddemo-clients=false', '-Dsimple-clients=egl', '-Dlauncher-logind=false',
-    '-Dweston-launch=false', '-Dscreenshare=false', '-Dsystemd=false',
-    '-Dimage-webp=false', '-Dbackend-drm=false', '-Dbackend-default=wayland'
+    '-Dxwayland=false', '-Dcolor-management-lcms=false','-Dpipewire=false','-Dcolor-management-colord=false',
+    '-Dremoting=false','-Dsimple-dmabuf-drm=auto','-Dshell-ivi=false', '-Ddemo-clients=false', 
+    '-Dsimple-clients=egl', '-Dlauncher-logind=false','-Dweston-launch=false', '-Dscreenshare=false',
+    '-Dsystemd=false','-Dimage-webp=false', '-Dbackend-drm=false', '-Dbackend-default=wayland'
 ]
 
 def PrintAndCheckCall(argv, *args, **kwargs):
@@ -53,12 +51,6 @@ def CopyConfigsAndCleanup(config_dir, dest_dir):
     os.makedirs(dest_dir)
 
   shutil.copy(os.path.join(config_dir, 'config.h'), dest_dir)
-
-  # The .asm file will not be present for all configurations.
-  asm_file = os.path.join(config_dir, 'config.asm')
-  if os.path.exists(asm_file):
-    shutil.copy(asm_file, dest_dir)
-
   shutil.rmtree(config_dir)
 
 
@@ -82,7 +74,7 @@ def GenerateGitConfig(config_dir,env,special_args=[]):
       MESON + DEFAULT_BUILD_ARGS + special_args + [temp_dir],
       cwd='src',
       env=env)
-  # We don't want non-visible log strings polluting the official binary.
+
   label = subprocess.check_output(["git", "describe", "--always"]).strip()
   label = label.decode("utf-8")
   RewriteGitFile(
@@ -98,24 +90,6 @@ def GenerateConfig(config_dir, env, special_args=[]):
       cwd='src',
       env=env)
 
-  # We don't want non-visible log strings polluting the official binary.
-  RewriteFile(
-      os.path.join(temp_dir, 'config.h'),
-      [(r'(#define CONFIG_LOG .*)',
-        r'// \1 -- Logging is controlled by Chromium')])
-
-  # Clang LTO doesn't respect stack alignment, so we must use the platform's
-  # default stack alignment in that case; https://crbug.com/928743.
-  RewriteFile(
-      os.path.join(temp_dir, 'config.h'),
-      [(r'(#define STACK_ALIGNMENT \d{1,2})',
-        r'// \1 -- Stack alignment is controlled by Chromium')])
-  if (os.path.exists(os.path.join(config_dir, 'config.asm'))):
-    RewriteFile(
-        os.path.join(temp_dir, 'config.asm'),
-        [(r'(%define STACK_ALIGNMENT \d{1,2})',
-          r'; \1 -- Stack alignment is controlled by Chromium')])
-
   CopyConfigsAndCleanup(temp_dir, config_dir)
 
 def ChangeConfigPath( ):
@@ -125,7 +99,6 @@ def ChangeConfigPath( ):
   for dr in dirs: 
     pattern = "#define {dir} \"/[a-zA-Z0-9\\-_/]+\"".format(dir=dr)
     RewriteFile(configfile, [(pattern,"")])
-  print("Replaced paths with real paths")
 
 def libweston_version_generator():
   versionfile = os.path.abspath(os.path.dirname(__file__))
@@ -139,7 +112,7 @@ def libweston_version_generator():
         dt = (line.strip("\n")).split(" ")
         version_number = dt[-1]
   version_number_list = (version_number.strip("\"\n\"")).split(".")
-  version_number_list.append(version_number.strip("\"\""))                  # re.sub method adds extra "" to given string
+  version_number_list.append(version_number.strip("\"\""))                 
   versions = [ "@WESTON_VERSION_MAJOR@", "@WESTON_VERSION_MINOR@", "@WESTON_VERSION_MICRO@", "@WESTON_VERSION@" ]
   with open(versioninfile) as f:
     contents = f.read()
@@ -159,8 +132,6 @@ def main():
   GenerateConfig('config', linux_env)
   ChangeConfigPath()
   libweston_version_generator()
-
-
 
 if __name__ == '__main__':
   main()

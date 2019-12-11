@@ -86,8 +86,8 @@ static_library("shared") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
+    "//build/config/compiler:no_chromium_code",
   ]
 }
 
@@ -106,19 +106,20 @@ static_library("cairo_shared") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
+    "//build/config/compiler:no_chromium_code",
     "//build/config/linux/pangocairo",
-    ":cairo",
-    ":pixman",
-    ":libinput_linux",
   ]
+
   if (use_glib) {
     configs += [ "//build/config/linux:glib" ]
   }
-}
 
-#libweston
+  public_configs = [
+    ":cairo",
+    ":pixman",
+  ]
+}
 
 shared_library("libweston") {
   cflags_c = [
@@ -156,8 +157,6 @@ shared_library("libweston") {
 
   include_dirs = [ "src/shared" ]
 
-  libs = [ "EGL" ]
-
   deps = [
     ":shared",
     ":text_cursor_position_protocol",
@@ -181,16 +180,15 @@ shared_library("libweston") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
+    "//build/config/compiler:no_chromium_code",
     "//ui/events/ozone/layout:xkbcommon",
-    ":pixman",
   ]
+
+  public_configs = [ ":pixman" ]
 }
 
-#renderer-gl
-
-shared_library("gl-renderer") {
+shared_library("gl_renderer") {
   output_prefix_override = true
   output_name = "gl-renderer"
 
@@ -198,7 +196,6 @@ shared_library("gl-renderer") {
 
   include_dirs = [
     "src/libweston",
-    "src/libweston/renderer-gl",
     "src/shared",
   ]
 
@@ -217,15 +214,13 @@ shared_library("gl-renderer") {
     "//third_party/libdrm",
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
-    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
+    "//build/config/compiler:no_chromium_code",
     "//ui/events/ozone/layout:xkbcommon",
-    ":pixman",
   ]
 }
 
@@ -244,12 +239,9 @@ shared_library("wayland_backend") {
     "src/libweston/backend-wayland/wayland.c",
   ]
 
-  libs = [ "EGL" ]
-
   deps = [
     ":cairo_shared",
     ":libweston",
-    "//third_party/libjpeg",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland:wayland_cursor",
     "//third_party/wayland:wayland_egl",
@@ -260,24 +252,18 @@ shared_library("wayland_backend") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
-    ":cairo",
-    ":pixman",
+    "//build/config/compiler:no_chromium_code",
     "//ui/events/ozone/layout:xkbcommon",
   ]
 }
-
-#libweston-desktop
 
 static_library("libweston_desktop") {
   include_dirs = [ "src/shared" ]
 
   sources = [
     "src/libweston-desktop/client.c",
-    "src/libweston-desktop/internal.h",
     "src/libweston-desktop/libweston-desktop.c",
-    "src/libweston-desktop/libweston-desktop.h",
     "src/libweston-desktop/seat.c",
     "src/libweston-desktop/surface.c",
     "src/libweston-desktop/wl-shell.c",
@@ -287,20 +273,18 @@ static_library("libweston_desktop") {
   ]
 
   deps = [
-    ":libweston",
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:xdg_shell_protocol",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
-    ":pixman",
+    "//build/config/compiler:no_chromium_code",
   ]
-}
 
-#compositor
+  public_configs = [ ":pixman" ]
+}
 
 pkg_config("libinput_linux") {
   packages = [ "libinput" ]
@@ -334,9 +318,11 @@ source_set("compositor") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
-    ":pixman",
+    "//build/config/compiler:no_chromium_code",
+  ]
+
+  public_configs = [
     ":libevdev_linux",
     ":libinput_linux",
   ]
@@ -352,7 +338,6 @@ static_library("toytoolkit") {
   deps = [
     ":cairo_shared",
     ":text_cursor_position_protocol",
-    "//third_party/libjpeg",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland:wayland_cursor",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
@@ -362,14 +347,15 @@ static_library("toytoolkit") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
+    "//build/config/compiler:no_chromium_code",
     "//ui/events/ozone/layout:xkbcommon",
-    ":cairo",
   ]
 }
 
-executable("weston-keyboard") {
+executable("weston_keyboard") {
+  output_name = "weston-keyboard"
+
   sources = [
     "src/clients/keyboard.c",
   ]
@@ -383,13 +369,14 @@ executable("weston-keyboard") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
-    ":cairo",
+    "//build/config/compiler:no_chromium_code",
   ]
 }
 
-executable("weston-screenshooter") {
+executable("weston_screenshooter") {
+  output_name = "weston-screenshooter"
+
   sources = [
     "src/clients/screenshot.c",
   ]
@@ -402,16 +389,15 @@ executable("weston-screenshooter") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
-    ":cairo",
+    "//build/config/compiler:no_chromium_code",
   ]
 }
 
-executable("weston-desktop-shell") {
-  cflags_c = [ "-Wno-string-conversion" ]
+executable("weston_desktop_shell") {
+  output_name = "weston-desktop-shell"
 
-  include_dirs = [ "src/clients" ]
+  cflags_c = [ "-Wno-string-conversion" ]
 
   sources = [
     "src/clients/desktop-shell.c",
@@ -425,9 +411,8 @@ executable("weston-desktop-shell") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
-    ":cairo",
+    "//build/config/compiler:no_chromium_code",
   ]
 }
 
@@ -451,29 +436,18 @@ shared_library("desktop_shell") {
     ":libweston",
     ":libweston_desktop",
     ":shared",
-    ":toytoolkit",
     ":weston_desktop_shell_protocol",
-    "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:input_method_protocol",
-    "//third_party/wayland-protocols:xdg_shell_protocol",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    "//build/config/compiler:no_chromium_code",
     ":weston_config",
-    ":pixman",
+    "//build/config/compiler:no_chromium_code",
   ]
 }
 
 executable("weston") {
-  cflags_c = [
-    "-Wno-string-conversion",
-    "-Wno-implicit-function-declaration",
-  ]
-
-  include_dirs = [ "src/shared" ]
-
   deps = [
     ":compositor",
     ":libweston",
@@ -482,22 +456,10 @@ executable("weston") {
 
   data_deps = [
     ":wayland_backend",
-    ":gl-renderer",
+    ":gl_renderer",
     ":desktop_shell",
-    ":weston-desktop-shell",
-    ":weston-keyboard",
-    ":weston-screenshooter",
-  ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    ":weston_config",
-  ]
-
-  public_configs = [
-    ":libinput_linux",
-    ":libevdev_linux",
-    ":pixman",
+    ":weston_desktop_shell",
+    ":weston_keyboard",
+    ":weston_screenshooter",
   ]
 }
